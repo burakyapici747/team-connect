@@ -1,0 +1,10 @@
+FROM couchbase:latest
+
+# Init script'i container içine kopyala
+COPY init-scripts/couchbase-init.sh /opt/couchbase/init/
+RUN chmod +x /opt/couchbase/init/couchbase-init.sh
+
+# Gerekli araçları yükle (curl vb.)
+RUN apt-get update && apt-get install -y \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
