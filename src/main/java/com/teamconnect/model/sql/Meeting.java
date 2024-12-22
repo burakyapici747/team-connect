@@ -1,6 +1,5 @@
 package com.teamconnect.model.sql;
 
-import com.teamconnect.common.enumarator.MeetingCreatedType;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -14,14 +13,11 @@ public class Meeting extends BaseModel {
     private Team team;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "organizer_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "organizer_user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meeting", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meeting")
     private List<MeetingParticipant> meetingParticipants;
-
-    @Column(name = "meeting_created_type", nullable = false)
-    private MeetingCreatedType meetingCreatedType;
 
     @Column(name = "title", nullable = false)
     private String title;

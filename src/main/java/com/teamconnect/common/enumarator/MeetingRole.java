@@ -1,12 +1,12 @@
 package com.teamconnect.common.enumarator;
 
-public enum Role {
-    ADMIN("ADMIN"),
-    USER("USER");
+public enum MeetingRole {
+    ORGANIZER("ORGANIZER"),
+    PARTICIPANT("PARTICIPANT");
 
     private final String role;
 
-    Role(String role) {
+    MeetingRole(String role) {
         this.role = role;
     }
 

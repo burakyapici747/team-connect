@@ -4,8 +4,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "ROLE")
-public class Role extends BaseModel {
+@Table(name = "TEAM_ROLE")
+public class TeamRole extends BaseModel {
     private String name;
-    private String description;
+    private String value;
 }

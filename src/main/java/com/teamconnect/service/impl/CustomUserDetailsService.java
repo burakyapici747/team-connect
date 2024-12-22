@@ -1,7 +1,7 @@
 package com.teamconnect.service.impl;
 
 import com.teamconnect.dto.UserDto;
-import com.teamconnect.model.CustomUserDetails;
+import com.teamconnect.model.sql.CustomUserDetails;
 import com.teamconnect.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

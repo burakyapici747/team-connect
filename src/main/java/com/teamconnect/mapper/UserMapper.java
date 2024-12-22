@@ -1,7 +1,7 @@
 package com.teamconnect.mapper;
 
 import com.teamconnect.dto.UserDto;
-import com.teamconnect.model.User;
+import com.teamconnect.model.sql.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.factory.Mappers;
 

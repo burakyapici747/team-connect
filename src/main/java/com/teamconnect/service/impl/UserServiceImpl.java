@@ -3,7 +3,7 @@ package com.teamconnect.service.impl;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.exception.UserNotFoundException;
 import com.teamconnect.mapper.UserMapper;
-import com.teamconnect.model.User;
+import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.UserRepository;
 import com.teamconnect.service.UserService;
 import org.springframework.stereotype.Service;

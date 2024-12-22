@@ -1,6 +1,6 @@
 package com.teamconnect.repository;
 
-import com.teamconnect.model.User;
+import com.teamconnect.model.sql.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

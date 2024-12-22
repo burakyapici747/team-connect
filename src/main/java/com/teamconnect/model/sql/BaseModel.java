@@ -12,10 +12,12 @@ public abstract class BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+
     @CreationTimestamp
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)

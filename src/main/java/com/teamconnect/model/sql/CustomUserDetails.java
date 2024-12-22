@@ -1,4 +1,4 @@
-package com.teamconnect.model;
+package com.teamconnect.model.sql;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,8 +16,7 @@ public class CustomUserDetails implements UserDetails {
             String id,
             String email,
             String password,
-            Collection<? extends GrantedAuthority> authorities
-    ) {
+            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.email = email;
         this.password = password;

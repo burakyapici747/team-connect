@@ -1,6 +1,5 @@
 package com.teamconnect.model.sql;
 
-import com.teamconnect.common.enumarator.MeetingRole;
 import com.teamconnect.common.enumarator.MeetingStatus;
 import jakarta.persistence.*;
 
@@ -17,16 +16,8 @@ public class MeetingParticipant extends BaseModel{
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = true)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "team_id", referencedColumnName = "id", nullable = false)
-    private Team team;
-
     @Enumerated(EnumType.STRING)
-    @Column(name = "meeting_role", nullable = false)
-    private MeetingRole meetingRole;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "meeting_status", nullable = false)
+    @Column(name = "status", nullable = false)
     private MeetingStatus meetingStatus;
 
     @Column(name = "joined_at", nullable = false)
