@@ -22,6 +22,6 @@ public class CouchbaseConfig extends AbstractCouchbaseConfiguration {
 
     @Override
     public String getBucketName() {
-        return "your_bucket_name";
+        return "teamconnect";
     }
 }
