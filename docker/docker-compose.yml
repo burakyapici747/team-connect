@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: teamconnect-postgres
+    environment:
+      POSTGRES_DB: teamconnect
+      POSTGRES_USER: teamconnect
+      POSTGRES_PASSWORD: teamconnect123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - teamconnect-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U teamconnect"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  couchbase:
+    image: couchbase:latest
+    container_name: teamconnect-couchbase
+    ports:
+      - "8091-8096:8091-8096"
+      - "11210:11210"
+    volumes:
+      - couchbase_data:/opt/couchbase/var
+    networks:
+      - teamconnect-network
+
+networks:
+  teamconnect-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  couchbase_data: 
