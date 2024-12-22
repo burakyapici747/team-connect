@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.List;
 
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User extends BaseModel {
     @OneToOne(cascade = CascadeType.ALL, targetEntity = UserProfile.class, fetch = FetchType.EAGER)
     private UserProfile userProfile;
