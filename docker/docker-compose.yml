@@ -28,8 +28,19 @@ services:
       - "11210:11210"
     volumes:
       - couchbase_data:/opt/couchbase/var
+      - ./init-scripts:/docker-entrypoint-initdb.d
     networks:
       - teamconnect-network
+    environment:
+      - COUCHBASE_ADMINISTRATOR_USERNAME=root
+      - COUCHBASE_ADMINISTRATOR_PASSWORD=plplpl123
+    entrypoint: >
+      /bin/bash -c "
+      chmod +x /docker-entrypoint-initdb.d/couchbase-init.sh &&
+      /entrypoint.sh couchbase-server &
+      sleep 15 &&
+      /docker-entrypoint-initdb.d/couchbase-init.sh &&
+      wait"
 
 networks:
   teamconnect-network:
@@ -37,4 +48,8 @@ networks:
 
 volumes:
   postgres_data:
-  couchbase_data: 
+    name: teamconnect_postgres_data
+    driver: local
+  couchbase_data:
+    name: teamconnect_couchbase_data
+    driver: local 
