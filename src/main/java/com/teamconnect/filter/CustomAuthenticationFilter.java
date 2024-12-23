@@ -30,7 +30,6 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
     private final Validator validator;
     private final JWTService jwtService;
     private final ObjectMapper objectMapper;
-    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     public CustomAuthenticationFilter(
             Validator validator,
@@ -42,7 +41,6 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         this.validator = validator;
         this.jwtService = jwtService;
         this.objectMapper = objectMapper;
-        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
         setAuthenticationFailureHandler(customAuthenticationFailureHandler);
     }
 
@@ -55,7 +53,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         validateLoginInput(loginInput);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginInput.username(),
+                loginInput.email(),
                 loginInput.password()
         );
 
@@ -73,15 +71,6 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
         String accessToken = jwtService.generateToken(userDetails);
         sendSuccessAuthenticationResponse(response, accessToken);
-    }
-
-    @Override
-    protected void unsuccessfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            AuthenticationException failed
-    ) throws IOException, ServletException{
-        super.unsuccessfulAuthentication(request, response, failed);
     }
 
     private void validateLoginInput(LoginInput loginInput) {
