@@ -59,4 +59,4 @@ public class ResponseWrapper<T> {
     public static <T> ResponseEntity<ResponseWrapper<T>> noContent() {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-} 
+}

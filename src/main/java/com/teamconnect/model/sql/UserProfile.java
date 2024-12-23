@@ -2,28 +2,27 @@ package com.teamconnect.model.sql;
 
 import com.teamconnect.common.enumarator.Availability;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.Instant;
-
+@Getter
+@Setter
 @Entity
-@Table(name = "USER_PROFILE")
-public class UserProfile extends BaseModel{
-    @Column(name = "bio", nullable = true)
+@Table(name = "USER_PROFILES")
+public class UserProfile extends BaseModel {
+    @Column(name = "bio")
     private String bio;
 
-    @Column(name = "profile_image_file_id", nullable = true)
+    @Column(name = "profile_image_file_id")
     private String profileImageFileId;
 
-    @Column(name = "date_of_birth", nullable = true)
-    private Instant dateOfBirth;
-
-    @Column(name = "language", nullable = true)
+    @Column(name = "language")
     private String language;
 
-    @Column(name = "availability", nullable = false)
     @Enumerated(EnumType.STRING)
+    @Column(name = "availability")
     private Availability availability;
 
-    @Column(name = "status_description", nullable = true)
+    @Column(name = "status_description")
     private String statusDescription;
 }
