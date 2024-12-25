@@ -1,4 +1,4 @@
-package com.teamconnect.api.output;
+package com.teamconnect.api.output.user;
 
 public record UpdateProfileOutput(
     String id,
