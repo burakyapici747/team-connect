@@ -1,9 +1,12 @@
 package com.teamconnect.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teamconnect.exception.CustomAuthenticationFailureHandler;
 import com.teamconnect.security.CustomAuthenticationProvider;
 import com.teamconnect.filter.CustomAuthenticationFilter;
 import com.teamconnect.filter.CustomAuthorizationFilter;
-import lombok.RequiredArgsConstructor;
+import com.teamconnect.service.impl.JWTService;
+import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -18,14 +21,26 @@ import org.springframework.security.config.annotation.authentication.configurati
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-    private final CustomAuthenticationFilter customAuthenticationFilter;
-    private final CustomAuthorizationFilter customAuthorizationFilter;
     private final CustomAuthenticationProvider customAuthenticationProvider;
+    private final CustomAuthorizationFilter customAuthorizationFilter;
+    private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
+
+    public SecurityConfig(
+        CustomAuthenticationProvider customAuthenticationProvider,
+        CustomAuthorizationFilter customAuthorizationFilter,
+        CustomAuthenticationFailureHandler customAuthenticationFailureHandler
+    ) {
+        this.customAuthenticationProvider = customAuthenticationProvider;
+        this.customAuthorizationFilter = customAuthorizationFilter;
+        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
+    }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(
+            HttpSecurity http, 
+            CustomAuthenticationFilter customAuthenticationFilter
+    ) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -33,15 +48,33 @@ public class SecurityConfig {
             .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/v1/api/users/register", "/v1/api/users/login").permitAll()
+                .requestMatchers("/v1/api/users", "/v1/api/auth/**").permitAll()
                 .requestMatchers("/v1/api/users/**").authenticated()
             );
-        
+
         return http.build();
     }
 
     @Bean
-    AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(
+            AuthenticationConfiguration config
+    ) throws Exception {
         return config.getAuthenticationManager();
     }
-} 
+
+    @Bean
+    public CustomAuthenticationFilter customAuthenticationFilter(
+        AuthenticationManager authenticationManager,
+        Validator validator,
+        JWTService jwtService,
+        ObjectMapper objectMapper
+    ) {
+        return new CustomAuthenticationFilter(
+            authenticationManager,
+            validator,
+            jwtService,
+            objectMapper,
+            customAuthenticationFailureHandler
+        );
+    }
+}

@@ -17,10 +17,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 
-@Slf4j
 @Component
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
@@ -53,7 +51,6 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             }
             processToken(token);
         } catch (Exception e) {
-            log.error("Authorization error occurred: ", e);
             SecurityContextHolder.clearContext();
         }
 

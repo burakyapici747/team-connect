@@ -2,8 +2,8 @@ package com.teamconnect.filter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teamconnect.api.input.LoginInput;
-import com.teamconnect.api.output.AuthenticationOutput;
+import com.teamconnect.api.input.user.UserLoginInput;
+import com.teamconnect.api.output.user.AuthenticationOutput;
 import com.teamconnect.exception.CustomAuthenticationFailureHandler;
 import com.teamconnect.exception.InvalidLoginInputException;
 import com.teamconnect.service.impl.JWTService;
@@ -14,6 +14,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -21,51 +22,57 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.util.Set;
 
+@Component
 public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/v1/api/auth", "POST");
+    private final AuthenticationManager authenticationManager;
     private final Validator validator;
     private final JWTService jwtService;
     private final ObjectMapper objectMapper;
 
     public CustomAuthenticationFilter(
-            Validator validator,
-            JWTService jwtService,
-            ObjectMapper objectMapper,
-            CustomAuthenticationFailureHandler customAuthenticationFailureHandler
+        AuthenticationManager authenticationManager,
+        Validator validator,
+        JWTService jwtService,
+        ObjectMapper objectMapper,
+        CustomAuthenticationFailureHandler failureHandler
     ) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
+        this.setAuthenticationManager(authenticationManager);
         this.validator = validator;
         this.jwtService = jwtService;
         this.objectMapper = objectMapper;
-        setAuthenticationFailureHandler(customAuthenticationFailureHandler);
+        this.authenticationManager = authenticationManager;
+        this.setAuthenticationFailureHandler(failureHandler);
     }
 
     @Override
     public Authentication attemptAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response
+        HttpServletRequest request,
+        HttpServletResponse response
     ) throws AuthenticationException, IOException, ServletException {
-        LoginInput loginInput = obtainLoginInput(request);
-        validateLoginInput(loginInput);
+        UserLoginInput userLoginInput = obtainLoginInput(request);
+        validateLoginInput(userLoginInput);
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                loginInput.email(),
-                loginInput.password()
+            userLoginInput.email(),
+            userLoginInput.password()
         );
 
-        return getAuthenticationManager().authenticate(authenticationToken);
+        return authenticationManager.authenticate(authenticationToken);
     }
 
     @Override
     protected void successfulAuthentication(
-            HttpServletRequest request,
-            HttpServletResponse response,
-            FilterChain chain,
-            Authentication authResult
+        HttpServletRequest request,
+        HttpServletResponse response,
+        FilterChain chain,
+        Authentication authResult
     ) throws IOException, ServletException{
         SecurityContextHolder.getContext().setAuthentication(authResult);
         UserDetails userDetails = (UserDetails) authResult.getPrincipal();
@@ -73,16 +80,16 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         sendSuccessAuthenticationResponse(response, accessToken);
     }
 
-    private void validateLoginInput(LoginInput loginInput) {
-        Set<ConstraintViolation<LoginInput>> violations = validator.validate(loginInput);
+    private void validateLoginInput(UserLoginInput userLoginInput) {
+        Set<ConstraintViolation<UserLoginInput>> violations = validator.validate(userLoginInput);
         if(!violations.isEmpty()){
             throw new InvalidLoginInputException(violations);
         }
     }
 
     private void sendSuccessAuthenticationResponse(
-            HttpServletResponse response,
-            String accessToken
+        HttpServletResponse response,
+        String accessToken
     ) throws IOException {
         response.setStatus(HttpServletResponse.SC_OK);
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
@@ -95,9 +102,9 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         }
     }
 
-    private LoginInput obtainLoginInput(HttpServletRequest request) throws IOException {
+    private UserLoginInput obtainLoginInput(HttpServletRequest request) throws IOException {
         try{
-            return this.objectMapper.readValue(request.getInputStream(), LoginInput.class);
+            return this.objectMapper.readValue(request.getInputStream(), UserLoginInput.class);
         }catch (JsonProcessingException e){
             throw new InvalidLoginInputException(Set.of());
         }
