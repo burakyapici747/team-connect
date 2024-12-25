@@ -2,26 +2,38 @@ package com.teamconnect.model.nosql;
 
 import com.teamconnect.common.enumarator.MessageTargetType;
 import jakarta.persistence.*;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.couchbase.core.mapping.Document;
+import org.springframework.data.couchbase.core.mapping.Field;
 
 import java.time.Instant;
 import java.util.List;
 
 @Document
+@TypeAlias("message")
 public class Message {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @Field
     private String receiverId;
+    @Field
     private String senderId;
+    @Field
     private String parentMessageId;
-    @Enumerated(value = EnumType.STRING)
+    @Field
+    @Enumerated(EnumType.STRING)
     private MessageTargetType targetType;
+    @Field
     private String content;
+    @Field
     private List<Reaction> reactions;
+    @Field
     private boolean isDeleted;
+    @Field
     private boolean isPinned;
+    @Field
     private Instant createdAt;
+    @Field
     private Instant updatedAt;
 
     public static class Reaction {

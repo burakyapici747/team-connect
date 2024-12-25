@@ -1,22 +1,28 @@
 package com.teamconnect.model.nosql;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
+import org.springframework.data.couchbase.core.mapping.Field;
+import org.springframework.data.annotation.TypeAlias;
 
 import java.time.Instant;
 
 @Document
+@TypeAlias("notification")
 public class Notification {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
+    @Field
     private String userId;
+    @Field
     private String referenceId;
+    @Field
     private String type;
+    @Field
     private String content;
+    @Field
     private boolean isRead;
+    @Field
     private Instant createdAt;
 
     public String getId() {

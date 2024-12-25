@@ -1,7 +1,7 @@
 package com.teamconnect.service.impl;
 
+import com.teamconnect.dto.UserDto;
 import com.teamconnect.model.sql.CustomUserDetails;
-import com.teamconnect.model.sql.User;
 import com.teamconnect.service.UserService;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -16,7 +16,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.findUserByEmail(email);
-        return new CustomUserDetails(user);
+        UserDto userDto = userService.getUserByEmail(email);
+        return new CustomUserDetails(
+            userDto.email(),
+            userDto.password(),
+            userDto.authorities()
+        );
     }
 }

@@ -5,16 +5,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 @Getter
 @Setter
 @Entity
-@Getter
-@Setter
 @Table(name = "USERS")
 public class User extends BaseModel {
-    @OneToOne(cascade = CascadeType.ALL, targetEntity = UserProfile.class, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private UserProfile userProfile;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
@@ -37,4 +39,7 @@ public class User extends BaseModel {
 
     @Column(name = "last_seen_at", nullable = false)
     private Instant lastSeenAt;
+    
+    @Column(name = "authorities", nullable = false)
+    private Set<SimpleGrantedAuthority> authorities = new HashSet<>();
 }

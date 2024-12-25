@@ -1,95 +1,149 @@
 package com.teamconnect.service.impl;
 
-import com.teamconnect.api.input.*;
-import com.teamconnect.dto.UserDto;
-import com.teamconnect.mapper.UserMapper;
-import com.teamconnect.model.sql.User;
-import com.teamconnect.repository.UserRepository;
-import com.teamconnect.service.UserService;
-import com.teamconnect.common.enumarator.Availability;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import jakarta.persistence.EntityNotFoundException;
-import java.util.List;
+import com.teamconnect.api.input.user.UserDeleteInput;
+import com.teamconnect.api.input.user.UserRegisterInput;
+import com.teamconnect.api.input.user.UserUpdateAvailabilityInput;
+import com.teamconnect.api.input.user.UserUpdateInput;
+import com.teamconnect.api.input.user.UserUpdatePasswordInput;
+import com.teamconnect.api.input.user.UserUpdateProfileInput;
+import com.teamconnect.common.enumarator.Availability;
+import com.teamconnect.dto.UserDto;
+import com.teamconnect.dto.UserProfileDto;
+import com.teamconnect.exception.UserAlreadyExistsException;
+import com.teamconnect.exception.UserNotFoundException;
+import com.teamconnect.mapper.UserMapper;
+import com.teamconnect.mapper.UserProfileMapper;
+import com.teamconnect.model.sql.User;
+import com.teamconnect.model.sql.UserProfile;
+import com.teamconnect.repository.UserRepository;
+import com.teamconnect.service.UserService;
 
 @Service
-@RequiredArgsConstructor
+@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
+
     @Override
-    @Transactional
-    public UserDto register(RegisterInput input) {
-        validateEmailNotExists(input.email());
-        User user = userMapper.registerInputToUser(input);
+    public UserDto getUserById(String id) {
+        return UserMapper.INSTANCE.userToUserDto(findUserById(id));
+    }
+
+    @Override
+    public UserDto getUserByEmail(String email) {
+        return UserMapper.INSTANCE.userToUserDto(findUserByEmail(email));
+    }
+
+    @Override
+    public UserDto createUser(UserRegisterInput input) {
+        validateUserEmailIsUnique(input.email());
+        User user = UserMapper.INSTANCE.userRegisterInputToUser(input);
         user.setPassword(passwordEncoder.encode(input.password()));
-        user = userRepository.save(user);
-        return userMapper.userToUserDto(user);
+        UserProfile userProfile = new UserProfile();
+        userProfile.setAvailability(Availability.ONLINE);
+        user.setUserProfile(userProfile);
+        return UserMapper.INSTANCE.userToUserDto(userRepository.save(user));
     }
 
     @Override
-    public UserDto getUser(String userId) {
-        return userMapper.userToUserDto(findUserById(userId));
+    public UserDto updateUserByEmail(String email, UserUpdateInput input) {
+        User user = findUserByEmail(email);
+
+        validateUserEmailIsUniqueForUpdate(email, user.getId());
+        UserMapper.INSTANCE.updateUserFromUpdateUserInput(input, user);
+        return UserMapper.INSTANCE.userToUserDto(userRepository.save(user));
     }
 
     @Override
-    @Transactional
-    public UserDto updateUser(UpdateUserInput input) {
-        User user = findUserById(input.userId());
-        userMapper.updateUserFromUpdateUserInput(user, input);
-        user = userRepository.save(user);
-        return userMapper.userToUserDto(user);
-    }
-
-    @Override
-    @Transactional
-    public void deleteUser(SecureOperationInput input) {
-        User user = findUserById(input.userId());
-        validatePassword(input.password(), user.getPassword());
-        userRepository.delete(user);
-    }
-
-    @Override
-    @Transactional
-    public void updatePassword(UpdatePasswordInput input) {
-        User user = findUserById(input.userId());
-        validatePassword(input.currentPassword(), user.getPassword());
-        user.setPassword(passwordEncoder.encode(input.newPassword()));
+    public void updateUserPassword(String email, UserUpdatePasswordInput input) {
+        User user = findUserByEmail(email);
+        user.setPassword(passwordEncoder.encode(input.password()));
         userRepository.save(user);
     }
 
     @Override
-    public List<UserDto> searchUsers(String keyword, Availability availability, String language) {
-        List<User> users = userRepository.searchUsers(keyword, availability != null ? availability.name() : null, language);
-        return users.stream()
-                   .map(userMapper::userToUserDto)
-                   .toList();
+    public Availability updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input) {
+        UserProfile userProfile = findUserProfileByUserEmail(email);
+        userProfile.setAvailability(input.availability());
+        return input.availability();
     }
 
-    public User findUserById(String userId) {
-        return userRepository.findById(userId)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+    @Override
+    public void deleteUserByEmail(String email, UserDeleteInput input) {
+        User user = findUserByEmail(email);
+        validatePasswordMatchesForDeletion(user.getPassword(), input.password());
+        userRepository.delete(findUserByEmail(email));
     }
 
-    public User findUserByEmail(String email) {
+    @Override
+    public UserProfileDto updateUserProfileByUserEmail(String email, UserUpdateProfileInput input) {
+        UserProfile userProfile = findUserProfileByUserEmail(email);
+        UserProfileMapper.INSTANCE.updateUserProfileFromUpdateProfileInput(input, userProfile);
+        return UserProfileMapper.INSTANCE.userProfileToUserProfileDto(userProfile);
+    }
+
+    @Override
+    public UserProfileDto getUserProfileByUserId(String id) {
+        return UserProfileMapper.INSTANCE.userProfileToUserProfileDto(findUserProfileByUserId(id));
+    }
+
+    @Override
+    public UserProfileDto getUserProfileByUserEmail(String email) {
+        return UserProfileMapper.INSTANCE.userProfileToUserProfileDto(findUserProfileByUserEmail(email));
+    }
+
+    @Override
+    public User getUserEntityByEmail(String email) {
+        return findUserByEmail(email);
+    }
+
+    private User findUserById(String id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
+    }
+
+    private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-            .orElseThrow(() -> new EntityNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
-    private void validateEmailNotExists(String email) {
+    public UserProfile findUserProfileByUserEmail(String email) {
+        return findUserByEmail(email).getUserProfile();
+    }
+
+    private UserProfile findUserProfileByUserId(String userId) {
+        return findUserById(userId).getUserProfile();
+    }
+
+    private void validateUserEmailIsUnique(String email) {
         if (userRepository.existsByEmail(email)) {
-            throw new IllegalArgumentException("Email already exists");
+            throw new UserAlreadyExistsException("User already exists");
         }
     }
 
-    private void validatePassword(String rawPassword, String encodedPassword) {
-        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
-            throw new IllegalArgumentException("Invalid password");
+    private void validateUserEmailIsUniqueForUpdate(String email, String userId) {
+        if (userRepository.existsByEmailAndIdNot(email, userId)) {
+            throw new UserAlreadyExistsException("User already exists");
         }
+    }
+
+    private void validatePasswordMatchesForDeletion(String rawPassword, String encodedPassword) {
+        if (!passwordEncoder.matches(rawPassword, encodedPassword)) {
+            throw new IllegalArgumentException("Password does not match");
+        }
+    }
+
+    @Override
+    public User getUserEntityById(String id) {
+        return findUserById(id);
     }
 }
