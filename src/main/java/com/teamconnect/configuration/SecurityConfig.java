@@ -1,22 +1,22 @@
 package com.teamconnect.configuration;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teamconnect.exception.CustomAuthenticationFailureHandler;
-import com.teamconnect.security.CustomAuthenticationProvider;
-import com.teamconnect.filter.CustomAuthenticationFilter;
-import com.teamconnect.filter.CustomAuthorizationFilter;
-import com.teamconnect.service.impl.JWTService;
-import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teamconnect.exception.CustomAuthenticationFailureHandler;
+import com.teamconnect.filter.CustomAuthenticationFilter;
+import com.teamconnect.filter.CustomAuthorizationFilter;
+import com.teamconnect.security.CustomAuthenticationProvider;
+import com.teamconnect.service.impl.JWTService;
+
+import jakarta.validation.Validator;
 
 @Configuration
 @EnableWebSecurity
@@ -27,10 +27,9 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     public SecurityConfig(
-        CustomAuthenticationProvider customAuthenticationProvider,
-        CustomAuthorizationFilter customAuthorizationFilter,
-        CustomAuthenticationFailureHandler customAuthenticationFailureHandler
-    ) {
+            CustomAuthenticationProvider customAuthenticationProvider,
+            CustomAuthorizationFilter customAuthorizationFilter,
+            CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.customAuthorizationFilter = customAuthorizationFilter;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
@@ -38,43 +37,38 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
-            HttpSecurity http, 
-            CustomAuthenticationFilter customAuthenticationFilter
-    ) throws Exception {
+            HttpSecurity http,
+            CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(customAuthenticationProvider)
-            .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
-            .authorizeHttpRequests(auth -> auth
+                .csrf(csrf -> csrf.disable())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(customAuthenticationProvider)
+                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        // Public endpoints
+                        .requestMatchers("/v1/api/auth/**", "/v1/api/users/register").permitAll()
                 .requestMatchers("/v1/api/users", "/v1/api/auth/**").permitAll()
                 .requestMatchers("/v1/api/users/**").authenticated()
-            );
-
-        return http.build();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config
-    ) throws Exception {
+            AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public CustomAuthenticationFilter customAuthenticationFilter(
-        AuthenticationManager authenticationManager,
-        Validator validator,
-        JWTService jwtService,
-        ObjectMapper objectMapper
-    ) {
+            AuthenticationManager authenticationManager,
+            Validator validator,
+            JWTService jwtService,
+            ObjectMapper objectMapper) {
         return new CustomAuthenticationFilter(
-            authenticationManager,
-            validator,
-            jwtService,
-            objectMapper,
-            customAuthenticationFailureHandler
-        );
+                authenticationManager,
+                validator,
+                jwtService,
+                objectMapper,
+                customAuthenticationFailureHandler);
     }
-}
+}customAuthenticationFailureHandler);

@@ -6,11 +6,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.teamconnect.api.input.team.TeamCreateInput;
+import com.teamconnect.api.input.team.TeamDeleteInput;
+import com.teamconnect.api.input.team.TeamUpdateInput;
 import com.teamconnect.common.enumarator.TeamMemberType;
 import com.teamconnect.dto.TeamDto;
 import com.teamconnect.dto.TeamMemberDto;
 import com.teamconnect.exception.TeamAlreadyExistsException;
 import com.teamconnect.exception.TeamNotFoundException;
+import com.teamconnect.exception.UnauthorizedAccessException;
 import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.model.sql.Team;
 import com.teamconnect.model.sql.TeamMember;
@@ -43,6 +46,44 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public TeamDto getTeamById(String id) {
         return TeamMapper.INSTANCE.teamToTeamDto(findById(id));
+    }
+
+    @Override
+    public TeamDto updateTeam(String id, TeamUpdateInput input, String email) {
+        Team team = findById(id);
+        validateCreatorAccess(team, email);
+
+        if (input.name() != null && !input.name().equals(team.getName())) {
+            validateTeamNameIsUnique(input.name());
+            team.setName(input.name());
+        }
+
+        if (input.description() != null) {
+            team.setDescription(input.description());
+        }
+
+        return TeamMapper.INSTANCE.teamToTeamDto(teamRepository.save(team));
+    }
+
+    @Override
+    public void deleteTeam(String id, TeamDeleteInput input, String email) {
+        Team team = findById(id);
+        validateCreatorAccess(team, email);
+
+        if (!"DELETE".equals(input.confirmationText())) {
+            throw new IllegalArgumentException("Invalid confirmation text");
+        }
+
+        teamRepository.delete(team);
+    }
+
+    @Override
+    public List<TeamDto> getUserTeams(String email) {
+        User user = userService.getUserEntityByEmail(email);
+        return user.getTeamMembers().stream()
+                .map(TeamMember::getTeam)
+                .map(TeamMapper.INSTANCE::teamToTeamDto)
+                .toList();
     }
 
     @Override
@@ -84,5 +125,16 @@ public class TeamServiceImpl implements TeamService {
         teamMember.setUser(user);
         teamMember.setMemberType(TeamMemberType.CREATOR);
         return teamMember;
+    }
+
+    private void validateCreatorAccess(Team team, String email) {
+        User currentUser = userService.getUserEntityByEmail(email);
+        boolean isCreator = team.getTeamMembers().stream()
+                .anyMatch(member -> member.getUser().getId().equals(currentUser.getId())
+                        && member.getMemberType() == TeamMemberType.CREATOR);
+
+        if (!isCreator) {
+            throw new UnauthorizedAccessException("Only team creator can perform this operation");
+        }
     }
 }

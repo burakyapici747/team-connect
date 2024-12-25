@@ -23,10 +23,15 @@ public interface TeamMapper {
 
     Team teamCreateInputToTeam(TeamCreateInput teamCreateInput);
 
+    @Mapping(target = "creator", source = "teamMembers", qualifiedByName = "findCreator")
     TeamCreateOutput teamDtoToTeamCreateOutput(TeamDto teamDto);
 
+    @Mapping(target = "creator", source = "teamMembers", qualifiedByName = "findCreator")
+    @Mapping(target = "memberCount", expression = "java(teamDto.getTeamMembers().size())")
     TeamPublicDetailsOutput teamDtoToTeamPublicDetailsOutput(TeamDto teamDto);
 
+    @Mapping(target = "creator", source = "teamMembers", qualifiedByName = "findCreator")
+    @Mapping(target = "totalMembers", expression = "java(teamDto.getTeamMembers().size())")
     TeamPrivateDetailsOutput teamDtoToTeamPrivateDetailsOutput(TeamDto teamDto);
 
     @Mapping(target = "id", source = "id")

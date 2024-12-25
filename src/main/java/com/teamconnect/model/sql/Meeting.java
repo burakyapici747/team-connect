@@ -1,9 +1,15 @@
 package com.teamconnect.model.sql;
 
-import jakarta.persistence.*;
-
 import java.time.Instant;
 import java.util.List;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "MEETING")
@@ -34,4 +40,3 @@ public class Meeting extends BaseModel {
     @Column(name = "is_recurring", nullable = false)
     private boolean isRecurring;
 }
-

@@ -20,8 +20,9 @@ import com.teamconnect.api.input.team.TeamRolePermissionAddInput;
 import com.teamconnect.api.input.team.TeamRolePermissionUpdateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
 import com.teamconnect.api.output.ResponseWrapper;
+import com.teamconnect.api.output.team.TeamRoleOutput;
 import com.teamconnect.common.enumarator.TeamPermission;
-import com.teamconnect.dto.TeamRoleDto;
+import com.teamconnect.mapper.TeamRoleMapper;
 import com.teamconnect.service.TeamRoleService;
 
 import jakarta.validation.Valid;
@@ -32,24 +33,27 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class TeamRoleController {
     private final TeamRoleService teamRoleService;
+    private final TeamRoleMapper teamRoleMapper;
 
     @PostMapping
-    public ResponseEntity<ResponseWrapper<TeamRoleDto>> createTeamRole(
+    public ResponseEntity<ResponseWrapper<TeamRoleOutput>> createTeamRole(
             @PathVariable String teamId,
             @Valid @RequestBody TeamRoleCreateInput input,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseWrapper.created(
-                teamRoleService.createTeamRole(teamId, input, userDetails.getUsername()));
+                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                        teamRoleService.createTeamRole(teamId, input, userDetails.getUsername())));
     }
 
     @PutMapping("/{roleId}")
-    public ResponseEntity<ResponseWrapper<TeamRoleDto>> updateTeamRole(
+    public ResponseEntity<ResponseWrapper<TeamRoleOutput>> updateTeamRole(
             @PathVariable String teamId,
             @PathVariable String roleId,
             @Valid @RequestBody TeamRoleUpdateInput input,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseWrapper.ok(
-                teamRoleService.updateTeamRole(teamId, roleId, input, userDetails.getUsername()));
+                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                        teamRoleService.updateTeamRole(teamId, roleId, input, userDetails.getUsername())));
     }
 
     @DeleteMapping("/{roleId}")
@@ -62,16 +66,21 @@ public class TeamRoleController {
     }
 
     @GetMapping("/{roleId}")
-    public ResponseEntity<ResponseWrapper<TeamRoleDto>> getTeamRoleById(
+    public ResponseEntity<ResponseWrapper<TeamRoleOutput>> getTeamRoleById(
             @PathVariable String teamId,
             @PathVariable String roleId) {
-        return ResponseWrapper.ok(teamRoleService.getTeamRoleById(teamId, roleId));
+        return ResponseWrapper.ok(
+                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                        teamRoleService.getTeamRoleById(teamId, roleId)));
     }
 
     @GetMapping
-    public ResponseEntity<ResponseWrapper<List<TeamRoleDto>>> getTeamRoles(
+    public ResponseEntity<ResponseWrapper<List<TeamRoleOutput>>> getTeamRoles(
             @PathVariable String teamId) {
-        return ResponseWrapper.ok(teamRoleService.getTeamRoles(teamId));
+        return ResponseWrapper.ok(
+                teamRoleService.getTeamRoles(teamId).stream()
+                        .map(teamRoleMapper::teamRoleDtoToTeamRoleOutput)
+                        .toList());
     }
 
     @PostMapping("/{roleId}/members/{memberId}")
@@ -95,13 +104,14 @@ public class TeamRoleController {
     }
 
     @PutMapping("/{roleId}/permissions")
-    public ResponseEntity<ResponseWrapper<TeamRoleDto>> updateRolePermissions(
+    public ResponseEntity<ResponseWrapper<TeamRoleOutput>> updateRolePermissions(
             @PathVariable String teamId,
             @PathVariable String roleId,
             @Valid @RequestBody TeamRolePermissionUpdateInput input,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseWrapper.ok(
-                teamRoleService.updateRolePermissions(teamId, roleId, input, userDetails.getUsername()));
+                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                        teamRoleService.updateRolePermissions(teamId, roleId, input, userDetails.getUsername())));
     }
 
     @GetMapping("/{roleId}/permissions")

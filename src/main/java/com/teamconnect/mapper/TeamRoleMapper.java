@@ -8,6 +8,7 @@ import org.mapstruct.factory.Mappers;
 
 import com.teamconnect.api.input.team.TeamRoleCreateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
+import com.teamconnect.api.output.team.TeamRoleOutput;
 import com.teamconnect.dto.TeamRoleDto;
 import com.teamconnect.model.sql.TeamRole;
 
@@ -30,4 +31,6 @@ public interface TeamRoleMapper {
     @Mapping(target = "permissions", source = "permissions", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "isDefault", source = "isDefault", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateTeamRoleFromUpdateInput(TeamRoleUpdateInput input, @MappingTarget TeamRole teamRole);
+
+    TeamRoleOutput teamRoleDtoToTeamRoleOutput(TeamRoleDto teamRoleDto);
 }

@@ -1,13 +1,21 @@
 package com.teamconnect.model.sql;
 
-import com.teamconnect.common.enumarator.MeetingStatus;
-import jakarta.persistence.*;
-
 import java.time.Instant;
+
+import com.teamconnect.common.enumarator.MeetingStatus;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "MEETING_PARTICIPANT")
-public class MeetingParticipant extends BaseModel{
+public class MeetingParticipant extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meeting_id", referencedColumnName = "id", nullable = false)
     private Meeting meeting;

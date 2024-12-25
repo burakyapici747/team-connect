@@ -1,15 +1,10 @@
 package com.teamconnect.api.input.team;
 
-import com.teamconnect.common.constant.TeamConstant;
-
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 public record TeamCreateInput(
-    @NotBlank(message = TeamConstant.NAME_NOT_EMPTY)
-    @Size(min = 3, max = 50, message = TeamConstant.NAME_SIZE)
-    String name,
+        @NotBlank(message = "Team name is required") @Size(min = 3, max = 50, message = "Team name must be between 3 and 50 characters") String name,
 
-    @Size(max = 500, message = TeamConstant.DESCRIPTION_SIZE)
-    String description
-) {}
+        @Size(max = 500, message = "Description cannot exceed 500 characters") String description) {
+}
