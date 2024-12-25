@@ -1,58 +1,49 @@
 package com.teamconnect.service.impl;
 
-import com.teamconnect.constant.TeamConstant;
-import com.teamconnect.dto.TeamDto;
-import com.teamconnect.dto.TeamMemberDto;
-import com.teamconnect.mapper.TeamMemberMapper;
-import com.teamconnect.mapper.TeamMapper;
-import com.teamconnect.model.sql.Team;
-import com.teamconnect.model.sql.TeamMember;
-import com.teamconnect.model.sql.TeamRole;
-import com.teamconnect.model.sql.User;
-import com.teamconnect.repository.TeamMemberRepository;
-import com.teamconnect.repository.TeamRepository;
-import com.teamconnect.repository.UserRepository;
-import com.teamconnect.service.TeamMemberService;
-import com.teamconnect.service.TeamService;
-import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import com.teamconnect.common.constant.TeamConstant;
+import com.teamconnect.dto.TeamMemberDto;
+import com.teamconnect.mapper.TeamMemberMapper;
+import com.teamconnect.model.sql.Team;
+import com.teamconnect.model.sql.TeamMember;
+import com.teamconnect.model.sql.User;
+import com.teamconnect.repository.TeamMemberRepository;
+import com.teamconnect.service.TeamMemberService;
+import com.teamconnect.service.TeamService;
+import com.teamconnect.service.UserService;
+
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class TeamMemberServiceImpl implements TeamMemberService {
-
     private final TeamMemberRepository teamMemberRepository;
     private final TeamService teamService;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final TeamMemberMapper teamMemberMapper;
 
     @Override
     public TeamMemberDto addMember(String teamId, String userId, String role) {
-        if (isMember(teamId, userId)) {
-            throw new IllegalStateException(TeamConstant.MEMBER_ALREADY_EXISTS);
-        }
+        validateMembership(teamId, userId);
 
-        TeamDto teamDto = teamService.getTeamByIdOrThrow(teamId);
+        User user = userService.getUserEntityById(userId);
+        Team team = teamService.getTeamEntityById(teamId);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException(
-                        String.format(TeamConstant.USER_NOT_FOUND, userId)));
-
-        Team team = TeamMapper.INSTANCE.toEntity(teamDto);
         TeamMember member = TeamMember.builder()
                 .team(team)
                 .user(user)
-                .teamRoles(Set.of())//TODO: role eklenecek
+                .teamRoles(Set.of())
                 .build();
 
         TeamMember savedMember = teamMemberRepository.save(member);
-        return TeamMemberMapper.INSTANCE.toDto(savedMember);
+        return teamMemberMapper.teamMemberToTeamMemberDto(savedMember);
     }
 
     @Override
@@ -67,18 +58,14 @@ public class TeamMemberServiceImpl implements TeamMemberService {
     public TeamMemberDto getMember(String teamId, String userId) {
         TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
                 .orElseThrow(() -> new EntityNotFoundException(TeamConstant.MEMBER_NOT_FOUND));
-        return TeamMemberMapper.INSTANCE.toDto(member);
+        return teamMemberMapper.teamMemberToTeamMemberDto(member);
     }
 
     @Override
     @Transactional(readOnly = true)
     public List<TeamMemberDto> getTeamMembers(String teamId) {
-        if (!teamService.existsById(teamId)) {
-            throw new EntityNotFoundException(
-                    String.format(TeamConstant.TEAM_NOT_FOUND, teamId));
-        }
         return teamMemberRepository.findByTeamId(teamId).stream()
-                .map(TeamMemberMapper.INSTANCE::toDto)
+                .map(teamMemberMapper::teamMemberToTeamMemberDto)
                 .toList();
     }
 
@@ -86,7 +73,7 @@ public class TeamMemberServiceImpl implements TeamMemberService {
     @Transactional(readOnly = true)
     public List<TeamMemberDto> getUserMemberships(String userId) {
         return teamMemberRepository.findByUserId(userId).stream()
-                .map(TeamMemberMapper.INSTANCE::toDto)
+                .map(teamMemberMapper::teamMemberToTeamMemberDto)
                 .toList();
     }
 
@@ -102,7 +89,6 @@ public class TeamMemberServiceImpl implements TeamMemberService {
         return teamMemberRepository.countByTeamId(teamId);
     }
 
-    //TODO: Bu metod'un newRole parametresi degisecek yerine teamRole id alacak diye dusunuyorum
     @Override
     public void updateMemberRole(String teamId, String userId, String newRole) {
         TeamMember member = teamMemberRepository.findByTeamIdAndUserId(teamId, userId)
@@ -110,5 +96,19 @@ public class TeamMemberServiceImpl implements TeamMemberService {
 
         member.setTeamRoles(Set.of(null));
         teamMemberRepository.save(member);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<TeamMemberDto> getTeamMembersByTeamId(String teamId) {
+        return teamMemberRepository.findByTeamId(teamId).stream()
+                .map(teamMemberMapper::teamMemberToTeamMemberDto)
+                .toList();
+    }
+
+    private void validateMembership(String teamId, String userId) {
+        if (!isMember(teamId, userId)) {
+            throw new EntityNotFoundException(TeamConstant.MEMBER_NOT_FOUND);
+        }
     }
 }

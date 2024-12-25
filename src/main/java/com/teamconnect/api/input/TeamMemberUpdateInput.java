@@ -1,16 +1,8 @@
 package com.teamconnect.api.input;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TeamMemberUpdateInput {
-    @NotNull(message = "Rol boş olamaz")
-    private String role;
-} 
+public record TeamMemberUpdateInput(
+    @NotNull(message = "Role cannot be empty")
+    String role
+) {} 
