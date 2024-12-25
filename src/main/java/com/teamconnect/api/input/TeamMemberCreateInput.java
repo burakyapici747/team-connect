@@ -1,22 +1,14 @@
 package com.teamconnect.api.input;
 
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class TeamMemberCreateInput {
-    @NotNull(message = "Kullanıcı ID boş olamaz")
-    private String userId;
+public record TeamMemberCreateInput(
+    @NotNull(message = "User ID cannot be empty")
+    String userId,
     
-    @NotNull(message = "Takım ID boş olamaz")
-    private String teamId;
+    @NotNull(message = "Team ID cannot be empty")
+    String teamId,
     
-    @NotNull(message = "Rol boş olamaz")
-    private String role;
-} 
+    @NotNull(message = "Role cannot be empty")
+    String role
+) {} 

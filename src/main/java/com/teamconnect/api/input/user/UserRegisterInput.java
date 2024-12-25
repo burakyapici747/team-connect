@@ -1,4 +1,4 @@
-package com.teamconnect.api.input;
+package com.teamconnect.api.input.user;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import static com.teamconnect.common.constant.ValidationConstants.*;
 
-public record RegisterInput(
+public record UserRegisterInput(
     @NotBlank(message = EMAIL + " " + REQUIRED_FIELD)
     @Email(message = EMAIL + " " + INVALID_FORMAT)
     @Size(max = EMAIL_MAX_LENGTH, message = EMAIL_LENGTH_MESSAGE)

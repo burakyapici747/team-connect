@@ -1,16 +1,11 @@
-package com.teamconnect.api.input;
+package com.teamconnect.api.input.user;
 
-import jakarta.validation.constraints.NotBlank;
+import com.teamconnect.common.enumarator.Availability;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import static com.teamconnect.common.constant.ValidationConstants.*;
-import com.teamconnect.common.enumarator.Availability;
 
-public record UpdateProfileInput(
-    @NotBlank(message = USER_ID + " " + REQUIRED_FIELD)
-    @Pattern(regexp = UUID_PATTERN, message = USER_ID + " " + UUID_MESSAGE)
-    String userId,
-
+public record UserCreateProfileInput(
     @Size(max = BIO_MAX_LENGTH, message = BIO_LENGTH_MESSAGE)
     String bio,
 
@@ -24,4 +19,4 @@ public record UpdateProfileInput(
 
     @Size(max = STATUS_DESCRIPTION_MAX_LENGTH, message = STATUS_DESCRIPTION_LENGTH_MESSAGE)
     String statusDescription
-) {} 
+) {}

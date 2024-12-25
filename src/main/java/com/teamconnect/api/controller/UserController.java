@@ -1,18 +1,21 @@
 package com.teamconnect.api.controller;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import com.teamconnect.api.input.*;
+import com.teamconnect.api.input.user.*;
 import com.teamconnect.api.output.*;
-import com.teamconnect.dto.UserDto;
+import com.teamconnect.api.output.user.UserDetailsPrivateOutput;
+import com.teamconnect.api.output.user.UserDetailsPublicOutput;
+import com.teamconnect.api.output.user.UserProfilePrivateOutput;
+import com.teamconnect.api.output.user.UserProfilePublicOutput;
+import com.teamconnect.common.enumarator.Availability;
 import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.service.UserService;
-import com.teamconnect.service.UserProfileService;
-import com.teamconnect.mapper.UserMapper;
-import com.teamconnect.service.SecurityService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import com.teamconnect.common.enumarator.Availability;
-import java.util.List;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+import com.teamconnect.mapper.UserMapper;
 import com.teamconnect.mapper.UserProfileMapper;
 
 @RestController
@@ -20,110 +23,109 @@ import com.teamconnect.mapper.UserProfileMapper;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-    private final UserProfileService userProfileService;
-    private final SecurityService securityService;
-    private final UserMapper userMapper;
-    private final UserProfileMapper userProfileMapper;
 
-    @PostMapping("/register")
-    public ResponseEntity<ResponseWrapper<RegisterOutput>> register(@RequestBody RegisterInput input) {
-        UserDto userDto = userService.register(input);
-        RegisterOutput output = userMapper.userDtoToRegisterOutput(userDto);
-        return ResponseWrapper.created(output, "User registered successfully");
+    @GetMapping("/{id}")
+    public ResponseEntity<ResponseWrapper<UserDetailsPublicOutput>> getUserById(@PathVariable String id) {
+        return ResponseWrapper.ok(
+            UserMapper.INSTANCE.userDtoToUserDetailsPublicOutput(
+                userService.getUserById(id)
+            )
+        );
     }
 
-    @GetMapping("/{userId}")
-    public ResponseEntity<ResponseWrapper<GetUserOutput>> getUser(
-        @PathVariable String userId
+    @GetMapping("/me")
+    public ResponseEntity<ResponseWrapper<UserDetailsPrivateOutput>> getCurrentUser(
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        securityService.validateUserAccess(userId);
-        UserDto userDto = userService.getUser(userId);
-        GetUserOutput output = userMapper.userDtoToGetUserOutput(userDto);
-        return ResponseWrapper.ok(output);
+        return ResponseWrapper.ok(
+            UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(
+                userService.getUserByEmail(userDetails.getUsername())
+            )
+        );
     }
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<ResponseWrapper<UpdateUserOutput>> updateUser(
-        @PathVariable String userId,
-        @RequestBody UpdateUserInput input
+    @PutMapping
+    public ResponseEntity<ResponseWrapper<UserDetailsPrivateOutput>> updateUser(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody UserUpdateInput input
     ) {
-        securityService.validateUserAccess(userId);
-        UserDto userDto = userService.updateUser(input);
-        UpdateUserOutput output = userMapper.userDtoToUpdateUserOutput(userDto);
-        return ResponseWrapper.ok(output, "User updated successfully");
+        return ResponseWrapper.ok(
+            UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(
+                userService.updateUserByEmail(userDetails.getUsername(), input)
+            ),
+            "User updated successfully"
+        );
     }
 
-    @DeleteMapping("/{userId}")
-    public ResponseEntity<ResponseWrapper<Void>> deleteUser(
-        @PathVariable String userId,
-        @RequestBody SecureOperationInput input
+    @PutMapping("/password")
+    public ResponseEntity<ResponseWrapper<Void>> updateUserPassword(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody UserUpdatePasswordInput input
     ) {
-        securityService.validateSecureOperation(userId, input.password());
-        userService.deleteUser(input);
+        userService.updateUserPassword(userDetails.getUsername(), input);
         return ResponseWrapper.noContent();
     }
 
-    @PutMapping("/{userId}/password")
-    public ResponseEntity<ResponseWrapper<Void>> updatePassword(
-        @PathVariable String userId,
-        @RequestBody UpdatePasswordInput input
+    @PutMapping("/me/availability")
+    public ResponseEntity<ResponseWrapper<Availability>> updateAvailability(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody UserUpdateAvailabilityInput input
     ) {
-        securityService.validateSecureOperation(userId, input.currentPassword());
-        userService.updatePassword(input);
-        return ResponseWrapper.ok(null, "Password updated successfully");
+        return ResponseWrapper.ok(
+            userService.updateAvailabilityByUserEmail(userDetails.getUsername(), input),
+            "Availability updated successfully"
+        );
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<ResponseWrapper<List<SearchUserOutput>>> searchUsers(
-        @RequestParam(required = false) String keyword,
-        @RequestParam(required = false) Availability availability,
-        @RequestParam(required = false) String language
+    @PostMapping
+    public ResponseEntity<ResponseWrapper<UserDetailsPrivateOutput>> register(
+        @Valid @RequestBody UserRegisterInput input
     ) {
-        List<UserDto> users = userService.searchUsers(keyword, availability, language);
-        List<SearchUserOutput> outputs = userMapper.userDtoListToSearchUserOutputList(users);
-        return ResponseWrapper.ok(outputs);
+        return ResponseWrapper.ok(
+            UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(userService.createUser(input))
+        );
+    }
+
+    @DeleteMapping
+    public ResponseEntity<ResponseWrapper<Void>> deleteUser(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody UserDeleteInput input
+    ) {
+        userService.deleteUserByEmail(userDetails.getUsername(), input);
+        return ResponseWrapper.noContent();
+    }
+
+    @PutMapping("/me/profile")
+    public ResponseEntity<ResponseWrapper<UserProfilePrivateOutput>> updateProfile(
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody UserUpdateProfileInput input
+    ) {
+        UserProfileDto profileDto = userService.updateUserProfileByUserEmail(userDetails.getUsername(), input);
+        return ResponseWrapper.ok(
+            UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePrivateOutput(profileDto),
+            "Profile updated successfully"
+        );
     }
 
     @GetMapping("/{userId}/profile")
-    public ResponseEntity<ResponseWrapper<GetProfileOutput>> getProfile(
+    public ResponseEntity<ResponseWrapper<UserProfilePublicOutput>> getUserProfile(
         @PathVariable String userId
     ) {
-        securityService.validateUserAccess(userId);
-        UserProfileDto profileDto = userProfileService.getProfile(userId);
-        GetProfileOutput output = userProfileMapper.userProfileDtoToGetProfileOutput(profileDto);
-        return ResponseWrapper.ok(output);
+        return ResponseWrapper.ok(
+            UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePublicOutput(
+                userService.getUserProfileByUserId(userId)
+            )
+        );
     }
 
-    @PutMapping("/{userId}/profile")
-    public ResponseEntity<ResponseWrapper<UpdateProfileOutput>> updateProfile(
-        @PathVariable String userId,
-        @RequestBody UpdateProfileInput input
+    @GetMapping("/me/profile")
+    public ResponseEntity<ResponseWrapper<UserProfilePrivateOutput>> getCurrentUserProfile(
+        @AuthenticationPrincipal UserDetails userDetails
     ) {
-        securityService.validateUserAccess(userId);
-        UserProfileDto profileDto = userProfileService.updateProfile(input);
-        UpdateProfileOutput output = userProfileMapper.userProfileDtoToUpdateProfileOutput(profileDto);
-        return ResponseWrapper.ok(output, "Profile updated successfully");
-    }
-
-    @PutMapping("/{userId}/profile/status")
-    public ResponseEntity<ResponseWrapper<UpdateStatusOutput>> updateStatus(
-        @PathVariable String userId,
-        @RequestBody UpdateStatusInput input
-    ) {
-        securityService.validateUserAccess(userId);
-        UserProfileDto profileDto = userProfileService.updateStatus(input);
-        UpdateStatusOutput output = userProfileMapper.userProfileDtoToUpdateStatusOutput(profileDto);
-        return ResponseWrapper.ok(output, "Status updated successfully");
-    }
-
-    @PutMapping("/{userId}/profile/availability")
-    public ResponseEntity<ResponseWrapper<UpdateAvailabilityOutput>> updateAvailability(
-        @PathVariable String userId,
-        @RequestBody UpdateAvailabilityInput input
-    ) {
-        securityService.validateUserAccess(userId);
-        UserProfileDto profileDto = userProfileService.updateAvailability(input);
-        UpdateAvailabilityOutput output = userProfileMapper.userProfileDtoToUpdateAvailabilityOutput(profileDto);
-        return ResponseWrapper.ok(output, "Availability updated successfully");
+        return ResponseWrapper.ok(
+            UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePrivateOutput(
+                userService.getUserProfileByUserEmail(userDetails.getUsername())
+            )
+        );
     }
 }
