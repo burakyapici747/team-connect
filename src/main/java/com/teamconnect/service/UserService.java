@@ -12,7 +12,6 @@ import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.model.sql.User;
 
 public interface UserService {
-    // Public API methods (DTO based)
     UserDto createUser(UserRegisterInput input);
 
     UserDto getUserById(String id);
@@ -33,7 +32,6 @@ public interface UserService {
 
     UserProfileDto updateUserProfileByUserEmail(String email, UserUpdateProfileInput input);
 
-    // Internal methods for service-to-service communication (Entity based)
     User getUserEntityById(String id);
 
     User getUserEntityByEmail(String email);

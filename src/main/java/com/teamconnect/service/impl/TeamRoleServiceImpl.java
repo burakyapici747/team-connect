@@ -26,17 +26,25 @@ import com.teamconnect.service.TeamService;
 import com.teamconnect.service.UserService;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional
-@RequiredArgsConstructor
 public class TeamRoleServiceImpl implements TeamRoleService {
     private final TeamRoleRepository teamRoleRepository;
     private final TeamMemberRepository teamMemberRepository;
     private final TeamService teamService;
     private final UserService userService;
-    private final TeamRoleMapper teamRoleMapper;
+
+    public TeamRoleServiceImpl(
+        TeamRoleRepository teamRoleRepository,
+        TeamMemberRepository teamMemberRepository,
+        TeamService teamService, UserService userService
+    ) {
+        this.teamRoleRepository = teamRoleRepository;
+        this.teamMemberRepository = teamMemberRepository;
+        this.teamService = teamService;
+        this.userService = userService;
+    }
 
     @Override
     public TeamRoleDto createTeamRole(String teamId, TeamRoleCreateInput input, String email) {
@@ -46,7 +54,7 @@ public class TeamRoleServiceImpl implements TeamRoleService {
         TeamRole teamRole = createAndSaveTeamRole(input);
         team.getTeamRoles().add(teamRole);
 
-        return teamRoleMapper.teamRoleToTeamRoleDto(teamRole);
+        return TeamRoleMapper.INSTANCE.teamRoleToTeamRoleDto(teamRole);
     }
 
     @Override
@@ -57,8 +65,8 @@ public class TeamRoleServiceImpl implements TeamRoleService {
         TeamRole teamRole = findTeamRoleById(roleId);
         validateRoleBelongsToTeam(team, teamRole);
 
-        teamRoleMapper.updateTeamRoleFromUpdateInput(input, teamRole);
-        return teamRoleMapper.teamRoleToTeamRoleDto(teamRoleRepository.save(teamRole));
+        TeamRoleMapper.INSTANCE.updateTeamRoleFromUpdateInput(input, teamRole);
+        return TeamRoleMapper.INSTANCE.teamRoleToTeamRoleDto(teamRoleRepository.save(teamRole));
     }
 
     @Override
@@ -78,14 +86,14 @@ public class TeamRoleServiceImpl implements TeamRoleService {
         Team team = teamService.getTeamEntityById(teamId);
         TeamRole teamRole = findTeamRoleById(roleId);
         validateRoleBelongsToTeam(team, teamRole);
-        return teamRoleMapper.teamRoleToTeamRoleDto(teamRole);
+        return TeamRoleMapper.INSTANCE.teamRoleToTeamRoleDto(teamRole);
     }
 
     @Override
     public List<TeamRoleDto> getTeamRoles(String teamId) {
         Team team = teamService.getTeamEntityById(teamId);
         return team.getTeamRoles().stream()
-                .map(teamRoleMapper::teamRoleToTeamRoleDto)
+                .map(TeamRoleMapper.INSTANCE::teamRoleToTeamRoleDto)
                 .toList();
     }
 
@@ -127,7 +135,7 @@ public class TeamRoleServiceImpl implements TeamRoleService {
         validateRoleBelongsToTeam(team, teamRole);
 
         teamRole.setPermissions(input.permissions());
-        return teamRoleMapper.teamRoleToTeamRoleDto(teamRoleRepository.save(teamRole));
+        return TeamRoleMapper.INSTANCE.teamRoleToTeamRoleDto(teamRoleRepository.save(teamRole));
     }
 
     @Override
@@ -162,7 +170,7 @@ public class TeamRoleServiceImpl implements TeamRoleService {
 
     // Private helper methods for entity operations
     private TeamRole createAndSaveTeamRole(TeamRoleCreateInput input) {
-        TeamRole teamRole = teamRoleMapper.teamRoleCreateInputToTeamRole(input);
+        TeamRole teamRole = TeamRoleMapper.INSTANCE.teamRoleCreateInputToTeamRole(input);
         return teamRoleRepository.save(teamRole);
     }
 

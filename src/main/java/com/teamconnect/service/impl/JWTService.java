@@ -21,28 +21,22 @@ import javax.crypto.SecretKey;
 @Slf4j
 @Service
 public class JWTService {
-    
+
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
-    
+
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
-    
+
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(CustomUserDetails userDetails) {
         return generateToken(new HashMap<>(), userDetails);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
-        if (!(userDetails instanceof CustomUserDetails)) {
-            log.error("UserDetails must be instance of CustomUserDetails");
-            throw new IllegalArgumentException("Invalid user details type");
-        }
-
-        CustomUserDetails customUserDetails = (CustomUserDetails) userDetails;
-        extraClaims.put("userId", customUserDetails.getId());
+    public String generateToken(Map<String, Object> extraClaims, CustomUserDetails userDetails) {
+        extraClaims.put("userId", userDetails.getId());
 
         return buildToken(extraClaims, userDetails, jwtExpiration);
     }

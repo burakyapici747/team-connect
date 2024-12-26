@@ -102,6 +102,11 @@ public class TeamServiceImpl implements TeamService {
         return teamRepository.existsById(id);
     }
 
+    @Override
+    public TeamMemberDto addMember(String teamId, String userId, String role) {
+        return null;
+    }
+
     private void validateTeamExists(String teamId) {
         if (!existsById(teamId)) {
             throw new TeamNotFoundException("Team not found with id: " + teamId);

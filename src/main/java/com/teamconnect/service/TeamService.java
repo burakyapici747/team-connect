@@ -27,4 +27,6 @@ public interface TeamService {
     Team getTeamEntityById(String id);
 
     boolean existsById(String id);
+
+    TeamMemberDto addMember(String teamId, String userId, String role);
 }

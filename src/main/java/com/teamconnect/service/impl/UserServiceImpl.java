@@ -1,5 +1,6 @@
 package com.teamconnect.service.impl;
 
+import com.teamconnect.common.enumarator.Role;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,8 +23,9 @@ import com.teamconnect.model.sql.UserProfile;
 import com.teamconnect.repository.UserRepository;
 import com.teamconnect.service.UserService;
 
+import java.util.Set;
+
 @Service
-@Transactional
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -48,6 +50,7 @@ public class UserServiceImpl implements UserService {
         validateUserEmailIsUnique(input.email());
         User user = UserMapper.INSTANCE.userRegisterInputToUser(input);
         user.setPassword(passwordEncoder.encode(input.password()));
+        user.setRoles(Set.of(Role.ROLE_USER));
         UserProfile userProfile = new UserProfile();
         userProfile.setAvailability(Availability.ONLINE);
         user.setUserProfile(userProfile);
