@@ -19,20 +19,8 @@ import com.teamconnect.model.sql.MeetingParticipant;
 public interface MeetingMapper {
     MeetingMapper INSTANCE = Mappers.getMapper(MeetingMapper.class);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "SCHEDULED")
-    @Mapping(target = "creator", ignore = true)
-    @Mapping(target = "participants", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Meeting meetingCreateInputToMeeting(MeetingCreateInput input);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)
-    @Mapping(target = "creator", ignore = true)
-    @Mapping(target = "participants", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     void updateMeetingFromUpdateInput(MeetingUpdateInput input, @MappingTarget Meeting meeting);
 
     MeetingDto meetingToMeetingDto(Meeting meeting);

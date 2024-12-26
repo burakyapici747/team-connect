@@ -20,11 +20,8 @@ public interface TeamMemberMapper {
 
     @Mapping(target = "user", source = "user")
     @Mapping(target = "memberType", source = "memberType")
-    @Mapping(target = "createdAt", source = "createdAt")
-    @Mapping(target = "updatedAt", source = "updatedAt")
     TeamMember teamMemberDtoToTeamMember(TeamMemberDto dto);
 
-    @Mapping(target = "joinedAt", ignore = true)
     @Mapping(target = "teamRoles", ignore = true)
     @Mapping(target = "team", ignore = true)
     @Mapping(target = "user", ignore = true)

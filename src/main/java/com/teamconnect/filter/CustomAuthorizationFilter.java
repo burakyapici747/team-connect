@@ -23,15 +23,14 @@ import org.springframework.lang.NonNull;
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
     private static final List<String> PUBLIC_ENDPOINTS = List.of(
-        "/v1/api/users/register",
-        "/v1/api/users/login",
+        "/v1/api/users",
         "/v1/api/auth/refresh-token"
     );
     private final JWTService jwtService;
     private static final String BEARER_PREFIX = "Bearer ";
     private final CustomUserDetailsService customUserDetailsService;
     private static final int BEARER_PREFIX_LENGTH = BEARER_PREFIX.length();
-    
+
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -40,13 +39,13 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     ) throws ServletException, IOException {
         try {
             if (shouldSkipAuthorization(request)) {
-                proceedWithFilterChain(filterChain, request, response);
+                filterChain.doFilter(request, response);
                 return;
             }
 
             String token = extractTokenFromRequest(request);
             if (token == null) {
-                proceedWithFilterChain(filterChain, request, response);
+                filterChain.doFilter(request, response);
                 return;
             }
             processToken(token);
@@ -54,11 +53,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
         }
 
-        proceedWithFilterChain(filterChain, request, response);
+        filterChain.doFilter(request, response);
     }
 
     private boolean shouldSkipAuthorization(HttpServletRequest request) {
-        return isPublicEndpoint(request.getRequestURI()) || 
+        return isPublicEndpoint(request.getRequestURI()) ||
                isPreflightRequest(request);
     }
 
@@ -73,7 +72,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private String extractTokenFromRequest(HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        
+
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
             return null;
         }
@@ -89,33 +88,26 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     }
 
     private boolean isValidTokenContext(String userId) {
-        return userId != null && 
+        return userId != null &&
                SecurityContextHolder.getContext().getAuthentication() == null;
     }
 
     private void authenticateUser(String token, String email) {
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-        
+
         if (jwtService.isTokenValid(token, userDetails)) {
             setSecurityContext(userDetails);
         }
     }
 
     private void setSecurityContext(UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken authToken = 
+        UsernamePasswordAuthenticationToken authToken =
             new UsernamePasswordAuthenticationToken(
                 userDetails,
                 null,
                 userDetails.getAuthorities()
             );
-        
-        SecurityContextHolder.getContext().setAuthentication(authToken);
-    }
 
-    private void proceedWithFilterChain(
-            FilterChain filterChain, 
-            HttpServletRequest request, 
-            HttpServletResponse response) throws IOException, ServletException {
-        filterChain.doFilter(request, response);
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 }

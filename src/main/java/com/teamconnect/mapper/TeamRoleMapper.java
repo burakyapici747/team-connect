@@ -29,7 +29,6 @@ public interface TeamRoleMapper {
     @Mapping(target = "name", source = "name", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "description", source = "description", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "permissions", source = "permissions", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "isDefault", source = "isDefault", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateTeamRoleFromUpdateInput(TeamRoleUpdateInput input, @MappingTarget TeamRole teamRole);
 
     TeamRoleOutput teamRoleDtoToTeamRoleOutput(TeamRoleDto teamRoleDto);

@@ -6,6 +6,7 @@ import com.teamconnect.api.input.user.UserLoginInput;
 import com.teamconnect.api.output.user.AuthenticationOutput;
 import com.teamconnect.exception.CustomAuthenticationFailureHandler;
 import com.teamconnect.exception.InvalidLoginInputException;
+import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.impl.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,7 +20,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
@@ -75,7 +75,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         Authentication authResult
     ) throws IOException, ServletException{
         SecurityContextHolder.getContext().setAuthentication(authResult);
-        UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+        CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
         String accessToken = jwtService.generateToken(userDetails);
         sendSuccessAuthenticationResponse(response, accessToken);
     }
