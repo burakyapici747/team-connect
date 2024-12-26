@@ -26,14 +26,15 @@ import com.teamconnect.mapper.TeamRoleMapper;
 import com.teamconnect.service.TeamRoleService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/v1/api/teams/{teamId}/roles")
-@RequiredArgsConstructor
 public class TeamRoleController {
     private final TeamRoleService teamRoleService;
-    private final TeamRoleMapper teamRoleMapper;
+
+    public TeamRoleController(TeamRoleService teamRoleService) {
+        this.teamRoleService = teamRoleService;
+    }
 
     @PostMapping
     public ResponseEntity<ResponseWrapper<TeamRoleOutput>> createTeamRole(
@@ -41,7 +42,7 @@ public class TeamRoleController {
             @Valid @RequestBody TeamRoleCreateInput input,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseWrapper.created(
-                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                TeamRoleMapper.INSTANCE.teamRoleDtoToTeamRoleOutput(
                         teamRoleService.createTeamRole(teamId, input, userDetails.getUsername())));
     }
 
@@ -52,7 +53,7 @@ public class TeamRoleController {
             @Valid @RequestBody TeamRoleUpdateInput input,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseWrapper.ok(
-                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                TeamRoleMapper.INSTANCE.teamRoleDtoToTeamRoleOutput(
                         teamRoleService.updateTeamRole(teamId, roleId, input, userDetails.getUsername())));
     }
 
@@ -70,7 +71,7 @@ public class TeamRoleController {
             @PathVariable String teamId,
             @PathVariable String roleId) {
         return ResponseWrapper.ok(
-                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                TeamRoleMapper.INSTANCE.teamRoleDtoToTeamRoleOutput(
                         teamRoleService.getTeamRoleById(teamId, roleId)));
     }
 
@@ -79,7 +80,7 @@ public class TeamRoleController {
             @PathVariable String teamId) {
         return ResponseWrapper.ok(
                 teamRoleService.getTeamRoles(teamId).stream()
-                        .map(teamRoleMapper::teamRoleDtoToTeamRoleOutput)
+                        .map(TeamRoleMapper.INSTANCE::teamRoleDtoToTeamRoleOutput)
                         .toList());
     }
 
@@ -110,7 +111,7 @@ public class TeamRoleController {
             @Valid @RequestBody TeamRolePermissionUpdateInput input,
             @AuthenticationPrincipal UserDetails userDetails) {
         return ResponseWrapper.ok(
-                teamRoleMapper.teamRoleDtoToTeamRoleOutput(
+                TeamRoleMapper.INSTANCE.teamRoleDtoToTeamRoleOutput(
                         teamRoleService.updateRolePermissions(teamId, roleId, input, userDetails.getUsername())));
     }
 

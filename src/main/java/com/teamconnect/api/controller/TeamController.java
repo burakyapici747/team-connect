@@ -26,19 +26,20 @@ import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.service.TeamService;
 
 import jakarta.validation.Valid;
-import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequestMapping("/v1/api/teams")
-@RequiredArgsConstructor
 public class TeamController {
 	private final TeamService teamService;
-	private final TeamMapper teamMapper;
+
+    public TeamController(TeamService teamService) {
+        this.teamService = teamService;
+    }
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ResponseWrapper<TeamPublicDetailsOutput>> getTeamById(@PathVariable String id) {
 		return ResponseWrapper.ok(
-				teamMapper.teamDtoToTeamPublicDetailsOutput(
+				TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(
 						teamService.getTeamById(id)));
 	}
 
@@ -46,17 +47,18 @@ public class TeamController {
 	public ResponseEntity<ResponseWrapper<List<TeamMemberDetailsPublicOutput>>> getTeamMembers(
 			@PathVariable String teamId) {
 		return ResponseWrapper.ok(
-				teamMapper.teamMemberDtosToTeamMemberDetailsPublicOutputs(
+				TeamMapper.INSTANCE.teamMemberDtosToTeamMemberDetailsPublicOutputs(
 						teamService.getTeamMembersByTeamId(teamId)));
 	}
 
 	@PostMapping
 	public ResponseEntity<ResponseWrapper<TeamCreateOutput>> createTeam(
 			@AuthenticationPrincipal UserDetails userDetails,
-			@Valid @RequestBody TeamCreateInput input) {
-		return ResponseWrapper.created(
-				teamMapper.teamDtoToTeamCreateOutput(
-						teamService.createTeam(userDetails.getUsername(), input)));
+			@Valid @RequestBody TeamCreateInput input
+    ) {
+        return ResponseWrapper.created(
+            TeamMapper.INSTANCE.teamDtoToTeamCreateOutput(
+                teamService.createTeam(userDetails.getUsername(), input)));
 	}
 
 	@PutMapping("/{id}")
@@ -65,7 +67,7 @@ public class TeamController {
 			@Valid @RequestBody TeamUpdateInput input,
 			@AuthenticationPrincipal UserDetails userDetails) {
 		return ResponseWrapper.ok(
-				teamMapper.teamDtoToTeamPrivateDetailsOutput(
+				TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(
 						teamService.updateTeam(id, input, userDetails.getUsername())));
 	}
 
@@ -83,7 +85,7 @@ public class TeamController {
 			@AuthenticationPrincipal UserDetails userDetails) {
 		return ResponseWrapper.ok(
 				teamService.getUserTeams(userDetails.getUsername()).stream()
-						.map(teamMapper::teamDtoToTeamPrivateDetailsOutput)
+						.map(TeamMapper.INSTANCE::teamDtoToTeamPrivateDetailsOutput)
 						.toList());
 	}
 }
