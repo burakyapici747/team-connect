@@ -17,7 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "team_roles")
+@Table(name = "TEAM_ROLE")
 public class TeamRole extends BaseModel {
     @Column(name = "name", nullable = false)
     private String name;

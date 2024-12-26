@@ -29,9 +29,9 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
             UserDetails userDetails = customUserDetailsService.loadUserByUsername(authentication.getName());
             validatePassword(userDetails, (UsernamePasswordAuthenticationToken) authentication);
             return new UsernamePasswordAuthenticationToken(
-                    userDetails.getUsername(),
-                    userDetails.getPassword(),
-                    userDetails.getAuthorities()
+                userDetails,
+                userDetails.getPassword(),
+                userDetails.getAuthorities()
             );
         }catch (Exception e){
             throw new UserNotFoundException("User not found");

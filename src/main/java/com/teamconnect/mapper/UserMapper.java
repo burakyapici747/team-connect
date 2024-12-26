@@ -1,25 +1,27 @@
 package com.teamconnect.mapper;
 
-import com.teamconnect.api.input.user.UserUpdateInput;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
+
 import com.teamconnect.api.input.user.UserRegisterInput;
+import com.teamconnect.api.input.user.UserUpdateInput;
 import com.teamconnect.api.output.user.UserDetailsPrivateOutput;
 import com.teamconnect.api.output.user.UserDetailsPublicOutput;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.model.sql.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
-@Mapper
+@Mapper(componentModel = "spring")
+@Component
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "password", ignore = true)
     @Mapping(target = "lastSeenAt", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "teamMembers", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "meetings", ignore = true)
@@ -35,7 +37,7 @@ public interface UserMapper {
     @Mapping(target = "email", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "lastSeenAt", ignore = true)
-    @Mapping(target = "authorities", ignore = true)
+    @Mapping(target = "roles", ignore = true)
     @Mapping(target = "teamMembers", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
     @Mapping(target = "meetings", ignore = true)
