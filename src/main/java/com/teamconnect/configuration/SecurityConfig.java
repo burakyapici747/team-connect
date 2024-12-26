@@ -7,6 +7,8 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,6 +19,7 @@ import com.teamconnect.security.CustomAuthenticationProvider;
 import com.teamconnect.service.impl.JWTService;
 
 import jakarta.validation.Validator;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -37,19 +40,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
-            HttpSecurity http,
-            CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(customAuthenticationProvider)
-                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                        // Public endpoints
-                        .requestMatchers("/v1/api/auth/**", "/v1/api/users/register").permitAll()
-                .requestMatchers("/v1/api/users", "/v1/api/auth/**").permitAll()
-                .requestMatchers("/v1/api/users/**").authenticated()
+        HttpSecurity http,
+        CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
+        return http
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(customAuthenticationProvider)
+            .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
+            .authorizeHttpRequests(auth -> auth
+                .anyRequest().permitAll())
+            .build();
     }
 
     @Bean
@@ -71,4 +72,4 @@ public class SecurityConfig {
                 objectMapper,
                 customAuthenticationFailureHandler);
     }
-}customAuthenticationFailureHandler);
+}

@@ -26,7 +26,7 @@ public final class ValidationConstants {
     public static final String CURRENT_PASSWORD = "Current password";
     public static final String NEW_PASSWORD = "New password";
     public static final String PROFILE_IMAGE = "Profile image";
-    
+
     // Size Constraints
     public static final int EMAIL_MAX_LENGTH = 100;
     public static final int PASSWORD_MIN_LENGTH = 8;
@@ -39,10 +39,10 @@ public final class ValidationConstants {
     public static final int STATUS_DESCRIPTION_MAX_LENGTH = 100;
 
     // Regex Patterns
-    public static final String PASSWORD_PATTERN = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,}$";
-    public static final String PASSWORD_PATTERN_MESSAGE = 
+    public static final String PASSWORD_PATTERN = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d\\W]{8,}$";
+    public static final String PASSWORD_PATTERN_MESSAGE =
         "Password must be at least 8 characters and contain at least one letter and one number";
-    public static final String UUID_PATTERN = 
+    public static final String UUID_PATTERN =
         "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$";
     public static final String UUID_MESSAGE = "Must be a valid UUID format";
     public static final String CONFIRMATION_TEXT_PATTERN = "^DELETE$";
@@ -71,4 +71,4 @@ public final class ValidationConstants {
     public static final String FIRST_NAME_REQUIRED = FIRST_NAME + " " + REQUIRED_FIELD;
     public static final String EMAIL_REQUIRED = EMAIL + " " + REQUIRED_FIELD;
     public static final String EMAIL_INVALID = EMAIL + " " + INVALID_FORMAT;
-} 
+}
