@@ -8,14 +8,10 @@ import org.springframework.transaction.annotation.Transactional;
 import com.teamconnect.dto.TeamMemberDto;
 import com.teamconnect.mapper.TeamMemberMapper;
 import com.teamconnect.model.sql.TeamMember;
-import com.teamconnect.model.sql.TeamRole;
 import com.teamconnect.repository.TeamMemberRepository;
-import com.teamconnect.repository.TeamRoleRepository;
 import com.teamconnect.service.TeamMemberService;
-import com.teamconnect.service.TeamService;
 
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 
 @Service
 @Transactional

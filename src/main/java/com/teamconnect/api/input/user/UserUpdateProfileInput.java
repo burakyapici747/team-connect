@@ -1,27 +1,27 @@
 package com.teamconnect.api.input.user;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
-import static com.teamconnect.common.constant.ValidationConstants.*;
+import static com.teamconnect.common.constant.ValidationConstants.BIO_LENGTH_MESSAGE;
+import static com.teamconnect.common.constant.ValidationConstants.BIO_MAX_LENGTH;
+import static com.teamconnect.common.constant.ValidationConstants.LANGUAGE_LENGTH_MESSAGE;
+import static com.teamconnect.common.constant.ValidationConstants.LANGUAGE_MAX_LENGTH;
+import static com.teamconnect.common.constant.ValidationConstants.PROFILE_IMAGE_UUID_MESSAGE;
+import static com.teamconnect.common.constant.ValidationConstants.STATUS_DESCRIPTION_LENGTH_MESSAGE;
+import static com.teamconnect.common.constant.ValidationConstants.STATUS_DESCRIPTION_MAX_LENGTH;
+import static com.teamconnect.common.constant.ValidationConstants.UUID_PATTERN;
+
 import com.teamconnect.common.enumarator.Availability;
 
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
+
 public record UserUpdateProfileInput(
-    @NotBlank(message = USER_ID + " " + REQUIRED_FIELD)
-    @Pattern(regexp = UUID_PATTERN, message = USER_ID + " " + UUID_MESSAGE)
-    String userId,
+        @Size(max = BIO_MAX_LENGTH, message = BIO_LENGTH_MESSAGE) String bio,
 
-    @Size(max = BIO_MAX_LENGTH, message = BIO_LENGTH_MESSAGE)
-    String bio,
+        @Size(max = LANGUAGE_MAX_LENGTH, message = LANGUAGE_LENGTH_MESSAGE) String language,
 
-    @Size(max = LANGUAGE_MAX_LENGTH, message = LANGUAGE_LENGTH_MESSAGE)
-    String language,
+        Availability availability,
 
-    Availability availability,
+        @Pattern(regexp = UUID_PATTERN, message = PROFILE_IMAGE_UUID_MESSAGE) String profileImageFileId,
 
-    @Pattern(regexp = UUID_PATTERN, message = PROFILE_IMAGE_UUID_MESSAGE)
-    String profileImageFileId,
-
-    @Size(max = STATUS_DESCRIPTION_MAX_LENGTH, message = STATUS_DESCRIPTION_LENGTH_MESSAGE)
-    String statusDescription
-) {}
+        @Size(max = STATUS_DESCRIPTION_MAX_LENGTH, message = STATUS_DESCRIPTION_LENGTH_MESSAGE) String statusDescription) {
+}

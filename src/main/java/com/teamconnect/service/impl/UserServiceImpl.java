@@ -1,9 +1,9 @@
 package com.teamconnect.service.impl;
 
-import com.teamconnect.common.enumarator.Role;
+import java.util.Set;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.teamconnect.api.input.user.UserDeleteInput;
 import com.teamconnect.api.input.user.UserRegisterInput;
@@ -12,6 +12,7 @@ import com.teamconnect.api.input.user.UserUpdateInput;
 import com.teamconnect.api.input.user.UserUpdatePasswordInput;
 import com.teamconnect.api.input.user.UserUpdateProfileInput;
 import com.teamconnect.common.enumarator.Availability;
+import com.teamconnect.common.enumarator.Role;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.exception.UserAlreadyExistsException;
@@ -20,18 +21,20 @@ import com.teamconnect.mapper.UserMapper;
 import com.teamconnect.mapper.UserProfileMapper;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.model.sql.UserProfile;
+import com.teamconnect.repository.UserProfileRepository;
 import com.teamconnect.repository.UserRepository;
 import com.teamconnect.service.UserService;
-
-import java.util.Set;
 
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository,
+            PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.userProfileRepository = userProfileRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -77,13 +80,14 @@ public class UserServiceImpl implements UserService {
     public Availability updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input) {
         UserProfile userProfile = findUserProfileByUserEmail(email);
         userProfile.setAvailability(input.availability());
-        return input.availability();
+        userProfileRepository.save(userProfile);
+        return userProfile.getAvailability();
     }
 
     @Override
     public void deleteUserByEmail(String email, UserDeleteInput input) {
         User user = findUserByEmail(email);
-        validatePasswordMatchesForDeletion(user.getPassword(), input.password());
+        validatePasswordMatchesForDeletion(input.password(), user.getPassword());
         userRepository.delete(findUserByEmail(email));
     }
 
@@ -91,6 +95,7 @@ public class UserServiceImpl implements UserService {
     public UserProfileDto updateUserProfileByUserEmail(String email, UserUpdateProfileInput input) {
         UserProfile userProfile = findUserProfileByUserEmail(email);
         UserProfileMapper.INSTANCE.updateUserProfileFromUpdateProfileInput(input, userProfile);
+        userProfileRepository.save(userProfile);
         return UserProfileMapper.INSTANCE.userProfileToUserProfileDto(userProfile);
     }
 
