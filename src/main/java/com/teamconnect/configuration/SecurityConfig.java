@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.teamconnect.exception.CustomAuthenticationFailureHandler;
@@ -19,7 +20,6 @@ import com.teamconnect.security.CustomAuthenticationProvider;
 import com.teamconnect.service.impl.JWTService;
 
 import jakarta.validation.Validator;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -40,17 +40,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
-        HttpSecurity http,
-        CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
+            HttpSecurity http,
+            CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
         return http
-            .csrf(AbstractHttpConfigurer::disable)
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            .authenticationProvider(customAuthenticationProvider)
-            .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-            .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
-            .authorizeHttpRequests(auth -> auth
-                .anyRequest().permitAll())
-            .build();
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authenticationProvider(customAuthenticationProvider)
+                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
+                .authorizeHttpRequests(auth -> auth
+                        .anyRequest().permitAll())
+                .build();
     }
 
     @Bean

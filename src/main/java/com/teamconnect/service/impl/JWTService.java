@@ -1,22 +1,24 @@
 package com.teamconnect.service.impl;
 
+import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.time.Instant;
+
+import javax.crypto.SecretKey;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
+
+import com.teamconnect.security.CustomUserDetails;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
-import com.teamconnect.security.CustomUserDetails;
-import javax.crypto.SecretKey;
 
 @Slf4j
 @Service
@@ -73,10 +75,9 @@ public class JWTService {
         return claimsResolver.apply(claims);
     }
 
-    public boolean isTokenValid(String token, UserDetails userDetails) {
+    public boolean isTokenValid(String token) {
         try {
-            final String username = extractUsername(token);
-            return (username.equals(userDetails.getUsername())) && !isTokenExpired(token);
+            return !isTokenExpired(token);
         } catch (Exception e) {
             log.error("Error validating token: ", e);
             return false;

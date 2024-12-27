@@ -1,54 +1,50 @@
 package com.teamconnect.filter;
 
 import java.io.IOException;
-import java.util.List;
+import java.util.Objects;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.teamconnect.common.constant.SecurityConstants;
 import com.teamconnect.service.impl.CustomUserDetailsService;
 import com.teamconnect.service.impl.JWTService;
+
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.lang.NonNull;
 
 @Component
-@RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
-    private static final List<String> PUBLIC_ENDPOINTS = List.of(
-        "/v1/api/users",
-        "/v1/api/auth/refresh-token"
-    );
-    private final JWTService jwtService;
     private static final String BEARER_PREFIX = "Bearer ";
-    private final CustomUserDetailsService customUserDetailsService;
     private static final int BEARER_PREFIX_LENGTH = BEARER_PREFIX.length();
+
+    private final JWTService jwtService;
+    private final CustomUserDetailsService customUserDetailsService;
+
+    public CustomAuthorizationFilter(JWTService jwtService, CustomUserDetailsService customUserDetailsService) {
+        this.jwtService = jwtService;
+        this.customUserDetailsService = customUserDetailsService;
+    }
 
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+            @NonNull FilterChain filterChain) throws ServletException, IOException {
         try {
-            if (shouldSkipAuthorization(request)) {
-                filterChain.doFilter(request, response);
-                return;
-            }
+            skipAuthorizationIfPublic(request, response, filterChain);
 
             String token = extractTokenFromRequest(request);
-            if (token == null) {
-                filterChain.doFilter(request, response);
-                return;
-            }
-            processToken(token);
+            validateToken(token);
+            authenticateUserByEmail(token);
+
         } catch (Exception e) {
             SecurityContextHolder.clearContext();
         }
@@ -56,58 +52,43 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private boolean shouldSkipAuthorization(HttpServletRequest request) {
-        return isPublicEndpoint(request.getRequestURI()) ||
-               isPreflightRequest(request);
-    }
-
-    private boolean isPublicEndpoint(String requestURI) {
-        return PUBLIC_ENDPOINTS.stream()
-            .anyMatch(requestURI::contains);
-    }
-
-    private boolean isPreflightRequest(HttpServletRequest request) {
-        return "OPTIONS".equals(request.getMethod());
+    private void skipAuthorizationIfPublic(HttpServletRequest request, HttpServletResponse response,
+            FilterChain filterChain) throws IOException, ServletException {
+        if (SecurityConstants.Endpoints.Public.matches(request.getMethod(), request.getRequestURI())) {
+            filterChain.doFilter(request, response);
+        }
     }
 
     private String extractTokenFromRequest(HttpServletRequest request) {
         String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-            return null;
+            throw new SecurityException("Invalid token");
         }
 
         return authHeader.substring(BEARER_PREFIX_LENGTH);
     }
 
-    private void processToken(String token) {
-        String userId = jwtService.extractUserId(token);
-        if (isValidTokenContext(userId)) {
-            authenticateUser(token, userId);
+    private void validateToken(String token) {
+        if (!jwtService.isTokenValid(token)) {
+            throw new SecurityException("Invalid token");
         }
     }
 
-    private boolean isValidTokenContext(String userId) {
-        return userId != null &&
-               SecurityContextHolder.getContext().getAuthentication() == null;
-    }
+    private void authenticateUserByEmail(String token) {
+        String email = jwtService.extractUsername(token);
 
-    private void authenticateUser(String token, String email) {
+        validateEmailAndSecurityContext(email);
+
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
-
-        if (jwtService.isTokenValid(token, userDetails)) {
-            setSecurityContext(userDetails);
-        }
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
+                userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authToken);
     }
 
-    private void setSecurityContext(UserDetails userDetails) {
-        UsernamePasswordAuthenticationToken authToken =
-            new UsernamePasswordAuthenticationToken(
-                userDetails,
-                null,
-                userDetails.getAuthorities()
-            );
-
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+    private void validateEmailAndSecurityContext(String email) {
+        if (Objects.isNull(email) || Objects.nonNull(SecurityContextHolder.getContext().getAuthentication())) {
+            throw new SecurityException("Invalid token");
+        }
     }
 }
