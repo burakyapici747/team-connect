@@ -1,4 +1,4 @@
-package com.teamconnect.api.output;
+package com.teamconnect.api.output.teammember;
 
 import java.time.Instant;
 
@@ -18,4 +18,4 @@ public record TeamMemberOutput(
         String name,
         String description
     ) {}
-} 
+}

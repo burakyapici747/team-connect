@@ -5,10 +5,7 @@ import jakarta.validation.constraints.NotNull;
 public record TeamMemberCreateInput(
     @NotNull(message = "User ID cannot be empty")
     String userId,
-    
+
     @NotNull(message = "Team ID cannot be empty")
-    String teamId,
-    
-    @NotNull(message = "Role cannot be empty")
-    String role
-) {} 
+    String teamId
+) {}

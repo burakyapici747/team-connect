@@ -1,5 +1,9 @@
 package com.teamconnect.api.controller;
 
+import com.teamconnect.api.input.team.TeamPublicOutput;
+import com.teamconnect.mapper.TeamMapper;
+import com.teamconnect.security.CustomUserDetails;
+import com.teamconnect.service.TeamService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,13 +35,17 @@ import com.teamconnect.service.UserService;
 
 import jakarta.validation.Valid;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/v1/api/users")
 public class UserController {
     private final UserService userService;
+    private final TeamService teamService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, TeamService teamService) {
         this.userService = userService;
+        this.teamService = teamService;
     }
 
     @GetMapping("/{id}")
@@ -53,14 +61,36 @@ public class UserController {
                         userService.getUserByEmail(userDetails.getUsername())));
     }
 
+    @GetMapping("/me/teams")
+    public ResponseEntity<ResponseWrapper<List<TeamPublicOutput>>> getCurrentUserTeams(
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ResponseWrapper.ok(
+            TeamMapper.INSTANCE.teamDtoListToTeamPublicOutputList(
+                teamService.getUserTeams(userDetails.getId())
+            )
+        );
+    }
+
+    @GetMapping("/{userId}/teams")
+    public ResponseEntity<ResponseWrapper<List<TeamPublicOutput>>> getUserTeams(
+        @PathVariable String userId
+    ) {
+        return ResponseWrapper.ok(TeamMapper.INSTANCE.teamDtoListToTeamPublicOutputList(
+            teamService.getUserTeams(userId))
+        );
+    }
+
     @PutMapping
     public ResponseEntity<ResponseWrapper<UserDetailsPrivateOutput>> updateUser(
-            @AuthenticationPrincipal UserDetails userDetails,
-            @Valid @RequestBody UserUpdateInput input) {
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody UserUpdateInput input
+    ) {
         return ResponseWrapper.ok(
                 UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(
-                        userService.updateUserByEmail(userDetails.getUsername(), input)),
-                "User updated successfully");
+                    userService.updateUserByEmail(userDetails.getUsername(), input)
+                ),
+            "User updated successfully");
     }
 
     @PutMapping("/password")

@@ -1,7 +1,5 @@
 package com.teamconnect.api.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,9 +17,10 @@ import com.teamconnect.api.input.team.TeamDeleteInput;
 import com.teamconnect.api.input.team.TeamUpdateInput;
 import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.api.output.team.TeamCreateOutput;
-import com.teamconnect.api.output.team.TeamMemberDetailsPublicOutput;
 import com.teamconnect.api.output.team.TeamPrivateDetailsOutput;
 import com.teamconnect.api.output.team.TeamPublicDetailsOutput;
+import com.teamconnect.common.annotation.RequireTeamPermission;
+import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.service.TeamService;
 
@@ -32,60 +31,47 @@ import jakarta.validation.Valid;
 public class TeamController {
 	private final TeamService teamService;
 
-    public TeamController(TeamService teamService) {
-        this.teamService = teamService;
-    }
+	public TeamController(TeamService teamService) {
+		this.teamService = teamService;
+	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ResponseWrapper<TeamPublicDetailsOutput>> getTeamById(@PathVariable String id) {
 		return ResponseWrapper.ok(
-				TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(
-						teamService.getTeamById(id)));
-	}
-
-	@GetMapping("/{teamId}/members")
-	public ResponseEntity<ResponseWrapper<List<TeamMemberDetailsPublicOutput>>> getTeamMembers(
-			@PathVariable String teamId) {
-		return ResponseWrapper.ok(
-				TeamMapper.INSTANCE.teamMemberDtosToTeamMemberDetailsPublicOutputs(
-						teamService.getTeamMembersByTeamId(teamId)));
+				TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(teamService.getTeamById(id)));
 	}
 
 	@PostMapping
 	public ResponseEntity<ResponseWrapper<TeamCreateOutput>> createTeam(
-			@AuthenticationPrincipal UserDetails userDetails,
-			@Valid @RequestBody TeamCreateInput input
+        @AuthenticationPrincipal UserDetails userDetails,
+        @Valid @RequestBody TeamCreateInput input
     ) {
-        return ResponseWrapper.created(
+		return ResponseWrapper.created(
             TeamMapper.INSTANCE.teamDtoToTeamCreateOutput(
-                teamService.createTeam(userDetails.getUsername(), input)));
+                teamService.createTeam(userDetails.getUsername(), input)
+            )
+        );
 	}
 
 	@PutMapping("/{id}")
+    @RequireTeamPermission(TeamPermission.UPDATE_TEAM)
 	public ResponseEntity<ResponseWrapper<TeamPrivateDetailsOutput>> updateTeam(
-			@PathVariable String id,
-			@Valid @RequestBody TeamUpdateInput input,
-			@AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal UserDetails userDetails,
+        @PathVariable String id,
+        @Valid @RequestBody TeamUpdateInput input
+    ) {
 		return ResponseWrapper.ok(
-				TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(
-						teamService.updateTeam(id, input, userDetails.getUsername())));
+            TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input))
+        );
 	}
 
 	@DeleteMapping("/{id}")
+    @RequireTeamPermission
 	public ResponseEntity<ResponseWrapper<Void>> deleteTeam(
-			@PathVariable String id,
-			@Valid @RequestBody TeamDeleteInput input,
-			@AuthenticationPrincipal UserDetails userDetails) {
-		teamService.deleteTeam(id, input, userDetails.getUsername());
+        @PathVariable String id,
+        @Valid @RequestBody TeamDeleteInput input
+    ) {
+		teamService.deleteTeam(id, input);
 		return ResponseWrapper.noContent();
-	}
-
-	@GetMapping("/my-teams")
-	public ResponseEntity<ResponseWrapper<List<TeamPrivateDetailsOutput>>> getUserTeams(
-			@AuthenticationPrincipal UserDetails userDetails) {
-		return ResponseWrapper.ok(
-				teamService.getUserTeams(userDetails.getUsername()).stream()
-						.map(TeamMapper.INSTANCE::teamDtoToTeamPrivateDetailsOutput)
-						.toList());
 	}
 }

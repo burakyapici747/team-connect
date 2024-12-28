@@ -1,4 +1,6 @@
 package com.teamconnect.api.input;
 
-public class TeamMemberRoleAssignInput {
-}
+public record TeamMemberRoleAssignInput(
+    String roleId,
+    String teamId
+) { }
