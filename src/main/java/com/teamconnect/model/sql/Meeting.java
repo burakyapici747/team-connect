@@ -3,13 +3,7 @@ package com.teamconnect.model.sql;
 import java.time.Instant;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "MEETING")
@@ -22,7 +16,7 @@ public class Meeting extends BaseModel {
     @JoinColumn(name = "organizer_user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meeting")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "meeting", cascade = CascadeType.ALL)
     private List<MeetingParticipant> meetingParticipants;
 
     @Column(name = "title", nullable = false)

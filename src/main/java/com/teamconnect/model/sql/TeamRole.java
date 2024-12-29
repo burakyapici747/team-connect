@@ -11,11 +11,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "TEAM_ROLE")
 public class TeamRole extends BaseModel {
@@ -32,4 +28,36 @@ public class TeamRole extends BaseModel {
 
     @Column(name = "is_default", nullable = false)
     private boolean isDefault = false;
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Set<TeamPermission> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(Set<TeamPermission> permissions) {
+        this.permissions = permissions;
+    }
+
+    public boolean isDefault() {
+        return isDefault;
+    }
+
+    public void setDefault(boolean aDefault) {
+        isDefault = aDefault;
+    }
 }

@@ -1,9 +1,6 @@
 package com.teamconnect.model.sql;
 
-import java.util.Set;
-
 import com.teamconnect.common.enumarator.TeamMemberType;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -13,18 +10,9 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.Set;
 
-@Getter
-@Setter
 @Entity
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "TEAM_MEMBER")
 public class TeamMember extends BaseModel {
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,4 +29,36 @@ public class TeamMember extends BaseModel {
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_member_roles", joinColumns = @JoinColumn(name = "team_member_id"), inverseJoinColumns = @JoinColumn(name = "team_role_id"))
     private Set<TeamRole> teamRoles;
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public TeamMemberType getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(TeamMemberType memberType) {
+        this.memberType = memberType;
+    }
+
+    public Set<TeamRole> getTeamRoles() {
+        return teamRoles;
+    }
+
+    public void setTeamRoles(Set<TeamRole> teamRoles) {
+        this.teamRoles = teamRoles;
+    }
 }

@@ -41,4 +41,10 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember, String> 
 
        @Query("SELECT COUNT(tm) FROM TeamMember tm WHERE tm.team.id = :teamId")
        long countByTeamId(@Param("teamId") String teamId);
+
+       @Query("SELECT tm FROM TeamMember tm " +
+                     "LEFT JOIN FETCH tm.user u " +
+                     "LEFT JOIN FETCH tm.teamRoles tr " +
+                     "WHERE tm.team.id = :teamId")
+       List<TeamMember> findByTeamIdWithUserAndRoles(@Param("teamId") String teamId);
 }

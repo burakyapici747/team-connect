@@ -11,7 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface TeamRepository extends JpaRepository<Team, String> {
-    
+
     @Query("SELECT DISTINCT t FROM Team t " +
            "LEFT JOIN FETCH t.teamMembers " +
            "LEFT JOIN FETCH t.teamRoles " +
@@ -34,4 +34,5 @@ public interface TeamRepository extends JpaRepository<Team, String> {
 
     Optional<Team> findByName(String name);
     boolean existsByName(String name);
+    boolean existsByNameAndIdNot(String name, String id);
 }
