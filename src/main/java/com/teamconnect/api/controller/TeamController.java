@@ -1,5 +1,17 @@
 package com.teamconnect.api.controller;
 
+import com.teamconnect.api.input.team.TeamCreateInput;
+import com.teamconnect.api.input.team.TeamDeleteInput;
+import com.teamconnect.api.input.team.TeamUpdateInput;
+import com.teamconnect.api.output.ResponseWrapper;
+import com.teamconnect.api.output.team.TeamCreateOutput;
+import com.teamconnect.api.output.team.TeamPublicDetailsOutput;
+import com.teamconnect.api.output.teammember.TeamPrivateOutput;
+import com.teamconnect.common.annotation.RequireTeamPermission;
+import com.teamconnect.common.enumarator.TeamPermission;
+import com.teamconnect.mapper.TeamMapper;
+import com.teamconnect.service.TeamService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,19 +24,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.teamconnect.api.input.team.TeamCreateInput;
-import com.teamconnect.api.input.team.TeamDeleteInput;
-import com.teamconnect.api.input.team.TeamUpdateInput;
-import com.teamconnect.api.output.ResponseWrapper;
-import com.teamconnect.api.output.team.TeamCreateOutput;
-import com.teamconnect.api.output.team.TeamPrivateDetailsOutput;
-import com.teamconnect.api.output.team.TeamPublicDetailsOutput;
-import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.common.enumarator.TeamPermission;
-import com.teamconnect.mapper.TeamMapper;
-import com.teamconnect.service.TeamService;
 
-import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/v1/api/teams")
@@ -53,7 +53,7 @@ public class TeamController {
 
 	@PutMapping("/{id}")
 	@RequireTeamPermission(TeamPermission.UPDATE_TEAM)
-	public ResponseEntity<ResponseWrapper<TeamPrivateDetailsOutput>> updateTeam(
+	public ResponseEntity<ResponseWrapper<TeamPrivateOutput>> updateTeam(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable String id,
 		@Valid @RequestBody TeamUpdateInput input

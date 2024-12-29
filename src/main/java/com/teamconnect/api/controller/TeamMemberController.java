@@ -1,7 +1,15 @@
 package com.teamconnect.api.controller;
 
+import com.teamconnect.api.input.TeamMemberCreateInput;
+import com.teamconnect.api.input.TeamMemberRoleAssignInput;
+import com.teamconnect.api.output.ResponseWrapper;
+import com.teamconnect.api.output.teammember.TeamMemberPublicOutput;
+import com.teamconnect.common.annotation.RequireTeamPermission;
+import com.teamconnect.common.enumarator.TeamPermission;
+import com.teamconnect.mapper.TeamMemberMapper;
+import com.teamconnect.service.TeamMemberService;
+import jakarta.validation.Valid;
 import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,27 +18,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.teamconnect.api.input.TeamMemberCreateInput;
-import com.teamconnect.api.input.TeamMemberRoleAssignInput;
-import com.teamconnect.api.output.ResponseWrapper;
-import com.teamconnect.api.output.team.TeamMemberPublicOutput;
-import com.teamconnect.api.output.teammember.TeamMemberOutput;
-import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.common.enumarator.TeamPermission;
-import com.teamconnect.mapper.TeamMemberMapper;
-import com.teamconnect.service.TeamMemberService;
-
-import jakarta.validation.Valid;
-
-
-
-
-
-
-
-
-
 
 @RestController
 @RequestMapping("/v1/api/teams/{teamId}/members")
@@ -52,12 +39,12 @@ public class TeamMemberController {
 
     @PostMapping
     @RequireTeamPermission(value = TeamPermission.ADD_MEMBER)
-    public ResponseEntity<ResponseWrapper<TeamMemberOutput>> addMember(
+    public ResponseEntity<ResponseWrapper<TeamMemberPublicOutput>> addMember(
         @PathVariable String teamId,
         @RequestBody TeamMemberCreateInput input
     ) {
         return ResponseWrapper.created(
-            teamMemberMapper.teamMemberDtoToTeamMemberOutput(teamMemberService.addMember(teamId, input))
+            teamMemberMapper.teamMemberDtoToTeamMemberPublicOutput(teamMemberService.addMember(teamId, input))
         );
     }
 

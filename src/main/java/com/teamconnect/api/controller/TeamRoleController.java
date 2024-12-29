@@ -82,8 +82,7 @@ public class TeamRoleController {
         @RequireTeamPermission(value = TeamPermission.CREATE_ROLE)
         public ResponseEntity<ResponseWrapper<TeamRoleOutput>> createTeamRole(
 			@PathVariable String teamId,
-			@Valid @RequestBody TeamRoleCreateInput input,
-			@AuthenticationPrincipal UserDetails userDetails
+			@Valid @RequestBody TeamRoleCreateInput input
         ) {
 			return ResponseWrapper.created(
 				TeamRoleMapper.INSTANCE.teamRoleDtoToTeamRoleOutput(teamRoleService.createTeamRole(teamId, input))
