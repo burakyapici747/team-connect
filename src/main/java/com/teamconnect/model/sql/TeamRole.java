@@ -1,9 +1,6 @@
 package com.teamconnect.model.sql;
 
-import java.util.Set;
-
 import com.teamconnect.common.enumarator.TeamPermission;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -11,6 +8,8 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Table;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "TEAM_ROLE")
@@ -24,7 +23,7 @@ public class TeamRole extends BaseModel {
     @ElementCollection(fetch = FetchType.EAGER)
     @Enumerated(EnumType.STRING)
     @Column(name = "permission")
-    private Set<TeamPermission> permissions;
+    private Set<TeamPermission> permissions = new HashSet<>();
 
     @Column(name = "is_default", nullable = false)
     private boolean isDefault = false;

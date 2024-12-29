@@ -1,12 +1,5 @@
 package com.teamconnect.service.impl;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.teamconnect.api.input.team.TeamRoleCreateInput;
 import com.teamconnect.api.input.team.TeamRolePermissionUpdateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
@@ -18,11 +11,13 @@ import com.teamconnect.model.sql.TeamRole;
 import com.teamconnect.repository.TeamRoleRepository;
 import com.teamconnect.service.TeamRoleService;
 import com.teamconnect.service.TeamService;
-
 import jakarta.persistence.EntityNotFoundException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class TeamRoleServiceImpl implements TeamRoleService {
     private final TeamRoleRepository teamRoleRepository;
     private final TeamService teamService;
@@ -46,9 +41,10 @@ public class TeamRoleServiceImpl implements TeamRoleService {
     @Override
     public TeamRoleDto createTeamRole(String teamId, TeamRoleCreateInput input) {
         Team team = teamService.getTeamEntityById(teamId);
+        
+        validateTeamRoleNameIsNotExist(team, input.name());
 
         TeamRole teamRole = TeamRoleMapper.INSTANCE.teamRoleCreateInputToTeamRole(input);
-
         team.getTeamRoles().add(teamRole);
 
         teamRoleRepository.save(teamRole);
@@ -59,11 +55,10 @@ public class TeamRoleServiceImpl implements TeamRoleService {
     @Override
     public TeamRoleDto updateTeamRole(String teamId, String roleId, TeamRoleUpdateInput input) {
         Team team = teamService.getTeamEntityById(teamId);
-
         TeamRole teamRole = findTeamRoleById(roleId);
         validateRoleBelongsToTeam(team, teamRole);
 
-        teamRoleRepository.save(teamRole);
+        validateTeamRoleNameIsNotExist(team, input.name());
 
         TeamRoleMapper.INSTANCE.updateTeamRoleFromUpdateInput(input, teamRole);
         return TeamRoleMapper.INSTANCE.teamRoleToTeamRoleDto(teamRoleRepository.save(teamRole));
@@ -114,7 +109,8 @@ public class TeamRoleServiceImpl implements TeamRoleService {
         TeamRole teamRole = findTeamRoleById(roleId);
         validateRoleBelongsToTeam(team, teamRole);
 
-        addPermissionsToRole(teamRole, permissions);
+        teamRole.getPermissions().addAll(permissions);
+        teamRoleRepository.save(teamRole);
     }
 
     @Override
@@ -125,14 +121,6 @@ public class TeamRoleServiceImpl implements TeamRoleService {
         validateRoleBelongsToTeam(team, teamRole);
 
         teamRole.getPermissions().remove(permission);
-        teamRoleRepository.save(teamRole);
-    }
-
-    private void addPermissionsToRole(TeamRole teamRole, Set<TeamPermission> permissions) {
-        if (teamRole.getPermissions() == null) {
-            teamRole.setPermissions(new HashSet<>());
-        }
-        teamRole.getPermissions().addAll(permissions);
         teamRoleRepository.save(teamRole);
     }
 
@@ -154,4 +142,16 @@ public class TeamRoleServiceImpl implements TeamRoleService {
             throw new EntityNotFoundException("Team role not found");
         }
     }
+
+    private void validateTeamRoleNameIsNotExist(Team team, String roleName) {
+        if (team.getTeamRoles().stream().anyMatch(role -> role.getName().equals(roleName))) {
+            throw new IllegalArgumentException("Team role with name " + roleName + " already exists");
+        }
+    }
+    
+    private void validateTeamRoleNameIsNotExistIdNot(Team team, String roleName, String excludeRoleId) {
+        if (team.getTeamRoles().stream().anyMatch(role -> role.getName().equals(roleName) && !role.getId().equals(excludeRoleId))) {
+            throw new IllegalArgumentException("Team role with name " + roleName + " already exists");
+        }
+    } 
 }

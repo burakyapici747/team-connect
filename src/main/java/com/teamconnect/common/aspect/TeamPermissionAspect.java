@@ -1,25 +1,28 @@
 package com.teamconnect.common.aspect;
 
+import com.teamconnect.common.annotation.RequireTeamPermission;
+import com.teamconnect.security.CustomUserDetails;
+import com.teamconnect.service.PermissionService;
+import com.teamconnect.service.SecurityService;
 import java.util.Arrays;
-
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.security.CustomUserDetails;
-import com.teamconnect.service.PermissionService;
-import com.teamconnect.service.SecurityService;
 
-import lombok.RequiredArgsConstructor;
+
 
 @Aspect
 @Component
-@RequiredArgsConstructor
 public class TeamPermissionAspect {
     private final PermissionService permissionService;
     private final SecurityService securityService;
+
+    public TeamPermissionAspect(PermissionService permissionService, SecurityService securityService) {
+        this.permissionService = permissionService;
+        this.securityService = securityService;
+    }
 
     @Around("@annotation(requireTeamPermission)")
     public Object checkPermission(ProceedingJoinPoint joinPoint, RequireTeamPermission requireTeamPermission) throws Throwable {

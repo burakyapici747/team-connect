@@ -2,6 +2,7 @@ package com.teamconnect.service.impl;
 
 import com.teamconnect.api.input.TeamMemberCreateInput;
 import com.teamconnect.api.input.TeamMemberRoleAssignInput;
+import com.teamconnect.common.enumarator.TeamMemberType;
 import com.teamconnect.dto.TeamMemberDto;
 import com.teamconnect.mapper.TeamMemberMapper;
 import com.teamconnect.model.sql.Team;
@@ -57,9 +58,10 @@ public class TeamMemberServiceImpl implements TeamMemberService {
         TeamMember teamMember = new TeamMember();
         teamMember.setUser(user);
         teamMember.setTeam(team);
+        teamMember.setMemberType(TeamMemberType.MEMBER);
         team.getTeamMembers().add(teamMember);
 
-        return teamMemberMapper.teamMemberToTeamMemberDto(teamMember);
+        return teamMemberMapper.teamMemberToTeamMemberDto(teamMemberRepository.save(teamMember));
     }
 
     @Override

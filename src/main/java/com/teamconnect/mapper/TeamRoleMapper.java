@@ -1,14 +1,5 @@
 package com.teamconnect.mapper;
 
-import java.util.List;
-
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.factory.Mappers;
-import org.springframework.stereotype.Component;
-
 import com.teamconnect.api.input.team.TeamRoleCreateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
 import com.teamconnect.api.output.teamrole.TeamRoleOutput;
@@ -16,6 +7,15 @@ import com.teamconnect.api.output.teamrole.TeamRolePrivateOutput;
 import com.teamconnect.api.output.teamrole.TeamRolePublicOutput;
 import com.teamconnect.dto.TeamRoleDto;
 import com.teamconnect.model.sql.TeamRole;
+import java.util.List;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
+
+
 
 @Mapper(componentModel = "spring")
 @Component
@@ -27,6 +27,7 @@ public interface TeamRoleMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "permissions", expression = "java(input.permissions().stream().map(permission -> TeamPermission.valueOf(permission.getValue())).collect(java.util.stream.Collectors.toSet()))")
     TeamRole teamRoleCreateInputToTeamRole(TeamRoleCreateInput input);
 
     @Mapping(target = "id", ignore = true)

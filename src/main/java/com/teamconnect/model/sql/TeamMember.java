@@ -10,6 +10,8 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -28,7 +30,7 @@ public class TeamMember extends BaseModel {
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "team_member_roles", joinColumns = @JoinColumn(name = "team_member_id"), inverseJoinColumns = @JoinColumn(name = "team_role_id"))
-    private Set<TeamRole> teamRoles;
+    private Set<TeamRole> teamRoles = new HashSet<>();
 
     public Team getTeam() {
         return team;
