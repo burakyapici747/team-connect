@@ -4,5 +4,6 @@ public record UserDetailsPublicOutput(
     String id,
     String email,
     String name,
-    String lastName
+    String lastName,
+    String profilePicture
 ) {}

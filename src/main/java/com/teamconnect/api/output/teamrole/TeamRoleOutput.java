@@ -1,4 +1,4 @@
-package com.teamconnect.api.output.team;
+package com.teamconnect.api.output.teamrole;
 
 import java.time.Instant;
 import java.util.Set;
