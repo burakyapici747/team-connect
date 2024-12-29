@@ -1,6 +1,5 @@
 package com.teamconnect.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -8,9 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import com.teamconnect.exception.UnauthorizedAccessException;
 import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.SecurityService;
-import com.teamconnect.exception.UnauthorizedAccessException;
+
+import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
@@ -28,12 +29,11 @@ public class SecurityServiceImpl implements SecurityService {
     @Override
     public void validateSecureOperation(String userId, String password) {
         validateUserAccess(userId);
-        
+
         try {
             String email = getCurrentUser().getUsername();
             authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(email, password)
-            );
+                    new UsernamePasswordAuthenticationToken(email, password));
         } catch (Exception e) {
             throw new UnauthorizedAccessException("Invalid password for secure operation");
         }
@@ -52,4 +52,4 @@ public class SecurityServiceImpl implements SecurityService {
     public Authentication getAuthentication() {
         return SecurityContextHolder.getContext().getAuthentication();
     }
-} 
+}

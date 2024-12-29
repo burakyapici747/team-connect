@@ -8,28 +8,26 @@ import com.teamconnect.api.input.team.TeamRolePermissionUpdateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
 import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.dto.TeamRoleDto;
+import com.teamconnect.model.sql.TeamRole;
 
 public interface TeamRoleService {
-    TeamRoleDto createTeamRole(String teamId, TeamRoleCreateInput input, String email);
+    TeamRoleDto createTeamRole(String teamId, TeamRoleCreateInput input);
 
-    TeamRoleDto updateTeamRole(String teamId, String roleId, TeamRoleUpdateInput input, String email);
+    TeamRoleDto updateTeamRole(String teamId, String roleId, TeamRoleUpdateInput input);
 
-    void deleteTeamRole(String teamId, String roleId, String email);
+    void deleteTeamRole(String teamId, String roleId);
 
     TeamRoleDto getTeamRoleById(String teamId, String roleId);
 
     List<TeamRoleDto> getTeamRoles(String teamId);
 
-    void assignRoleToMember(String teamId, String memberId, String roleId, String email);
-
-    void removeRoleFromMember(String teamId, String memberId, String roleId, String email);
-
-    // Permission yönetimi metodları
-    TeamRoleDto updateRolePermissions(String teamId, String roleId, TeamRolePermissionUpdateInput input, String email);
+    TeamRoleDto updateRolePermissions(String teamId, String roleId, TeamRolePermissionUpdateInput input);
 
     Set<TeamPermission> getRolePermissions(String teamId, String roleId);
 
-    void addPermissionsToRole(String teamId, String roleId, Set<TeamPermission> permissions, String email);
+    void addPermissionsToRole(String teamId, String roleId, Set<TeamPermission> permissions);
 
     void removePermissionFromRole(String teamId, String roleId, TeamPermission permission, String email);
+
+    TeamRole findTeamRoleById(String roleId);
 }
