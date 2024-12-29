@@ -47,30 +47,26 @@ public class TeamController {
         @Valid @RequestBody TeamCreateInput input
     ) {
 		return ResponseWrapper.created(
-            TeamMapper.INSTANCE.teamDtoToTeamCreateOutput(
-                teamService.createTeam(userDetails.getUsername(), input)
-            )
+            TeamMapper.INSTANCE.teamDtoToTeamCreateOutput(teamService.createTeam(userDetails.getUsername(), input))
         );
 	}
 
 	@PutMapping("/{id}")
-    @RequireTeamPermission(TeamPermission.UPDATE_TEAM)
+	@RequireTeamPermission(TeamPermission.UPDATE_TEAM)
 	public ResponseEntity<ResponseWrapper<TeamPrivateDetailsOutput>> updateTeam(
-        @AuthenticationPrincipal UserDetails userDetails,
-        @PathVariable String id,
-        @Valid @RequestBody TeamUpdateInput input
-    ) {
+		@AuthenticationPrincipal UserDetails userDetails,
+		@PathVariable String id,
+		@Valid @RequestBody TeamUpdateInput input
+	) {
 		return ResponseWrapper.ok(
-            TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input))
-        );
+				TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input)));
 	}
 
 	@DeleteMapping("/{id}")
-    @RequireTeamPermission
+	@RequireTeamPermission
 	public ResponseEntity<ResponseWrapper<Void>> deleteTeam(
-        @PathVariable String id,
-        @Valid @RequestBody TeamDeleteInput input
-    ) {
+			@PathVariable String id,
+			@Valid @RequestBody TeamDeleteInput input) {
 		teamService.deleteTeam(id, input);
 		return ResponseWrapper.noContent();
 	}

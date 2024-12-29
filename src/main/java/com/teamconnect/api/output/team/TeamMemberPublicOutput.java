@@ -1,16 +1,14 @@
 package com.teamconnect.api.output.team;
 
 import java.time.Instant;
+import java.util.Set;
+
+import com.teamconnect.api.output.teamrole.TeamRolePublicOutput;
+import com.teamconnect.api.output.user.UserDetailsPublicOutput;
 
 public record TeamMemberPublicOutput(
-        String id,
-        UserPublicOutput user,
-        String role,
-        Instant joinDate) {
-    public record UserPublicOutput(
-            String id,
-            String name,
-            String lastName,
-            String email) {
-    }
-}
+	String id,
+	UserDetailsPublicOutput user,
+	Set<TeamRolePublicOutput> roles,
+	Instant joinDate
+) {}

@@ -2,12 +2,6 @@ package com.teamconnect.api.controller;
 
 import java.util.List;
 
-import com.teamconnect.api.input.TeamMemberRoleAssignInput;
-import com.teamconnect.api.output.teammember.TeamMemberOutput;
-import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.common.enumarator.TeamPermission;
-import com.teamconnect.mapper.TeamMemberMapper;
-import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,22 +12,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.teamconnect.api.input.TeamMemberCreateInput;
+import com.teamconnect.api.input.TeamMemberRoleAssignInput;
 import com.teamconnect.api.output.ResponseWrapper;
-import com.teamconnect.dto.TeamMemberDto;
+import com.teamconnect.api.output.team.TeamMemberPublicOutput;
+import com.teamconnect.api.output.teammember.TeamMemberOutput;
+import com.teamconnect.common.annotation.RequireTeamPermission;
+import com.teamconnect.common.enumarator.TeamPermission;
+import com.teamconnect.mapper.TeamMemberMapper;
 import com.teamconnect.service.TeamMemberService;
+
+import jakarta.validation.Valid;
+
+
+
+
+
+
+
+
+
 
 @RestController
 @RequestMapping("/v1/api/teams/{teamId}/members")
 public class TeamMemberController {
     private final TeamMemberService teamMemberService;
+    private final TeamMemberMapper teamMemberMapper;
 
-    public TeamMemberController(TeamMemberService teamMemberService) {
+    public TeamMemberController(TeamMemberService teamMemberService, TeamMemberMapper teamMemberMapper) {
         this.teamMemberService = teamMemberService;
+        this.teamMemberMapper = teamMemberMapper;
     }
 
     @GetMapping
-    public ResponseEntity<ResponseWrapper<List<TeamMemberDto>>> getTeamMembers(@PathVariable String teamId) {
-        return ResponseWrapper.ok(teamMemberService.getTeamMembersByTeamId(teamId));
+    public ResponseEntity<ResponseWrapper<List<TeamMemberPublicOutput>>> getTeamMembers(@PathVariable String teamId) {
+        return ResponseWrapper.ok(teamMemberMapper.teamMemberDtoListToTeamMemberPublicOutputList(
+            teamMemberService.getTeamMembersByTeamId(teamId)
+        ));
     }
 
     @PostMapping
@@ -43,7 +57,7 @@ public class TeamMemberController {
         @RequestBody TeamMemberCreateInput input
     ) {
         return ResponseWrapper.created(
-            TeamMemberMapper.INSTANCE.teamMemberDtoToTeamMemberOutput(teamMemberService.addMember(teamId, input))
+            teamMemberMapper.teamMemberDtoToTeamMemberOutput(teamMemberService.addMember(teamId, input))
         );
     }
 

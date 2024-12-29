@@ -55,10 +55,13 @@ public class UserController {
 
     @GetMapping("/me")
     public ResponseEntity<ResponseWrapper<UserDetailsPrivateOutput>> getCurrentUser(
-            @AuthenticationPrincipal UserDetails userDetails) {
+        @AuthenticationPrincipal UserDetails userDetails
+    ) {
         return ResponseWrapper.ok(
-                UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(
-                        userService.getUserByEmail(userDetails.getUsername())));
+            UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(
+                userService.getUserByEmail(userDetails.getUsername())
+            )
+        );
     }
 
     @GetMapping("/me/teams")
