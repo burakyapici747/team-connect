@@ -1,15 +1,29 @@
 package com.teamconnect.common.enumarator;
 
 public enum TeamPermission {
-    MANAGE_MEMBERS, // Üye yönetimi
-    MANAGE_ROLES, // Rol yönetimi
-    MANAGE_MEETINGS, // Toplantı yönetimi
-    SEND_MESSAGE, // Mesaj gönderme
-    DELETE_MESSAGE, // Mesaj silme
-    PIN_MESSAGE, // Mesaj sabitleme
-    UPLOAD_FILE, // Dosya yükleme
-    DELETE_FILE, // Dosya silme
-    UPDATE_TEAM_INFO, // Takım bilgilerini güncelleme
-    VIEW_ANALYTICS, // Analitikleri görüntüleme
-    MANAGE_CHANNELS // Kanal yönetimi
+    SEND_MESSAGE("SEND_MESSAGE"),
+    DELETE_MESSAGE("DELETE_MESSAGE"),
+    PIN_MESSAGE("PIN_MESSAGE"),
+    UPLOAD_FILE("UPLOAD_FILE"),
+    DELETE_FILE("DELETE_FILE"),
+    UPDATE_TEAM_INFO("UPDATE_TEAM_INFO"),
+    VIEW_ANALYTICS("VIEW_ANALYTICS"),
+    MANAGE_CHANNELS("MANAGE_CHANNELS"),
+    REMOVE_MEMBER("REMOVE_MEMBER"),
+    ASSIGN_ROLE("ASSIGN_ROLE"),
+    REMOVE_ROLE("REMOVE_ROLE"),
+    ADD_MEMBER("ADD_MEMBER"),
+    UPDATE_TEAM("UPDATE_TEAM"),
+    CREATE_ROLE("CREATE_ROLE"),
+    UPDATE_ROLE("UPDATE_ROLE");
+
+    private final String value;
+
+    TeamPermission(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }

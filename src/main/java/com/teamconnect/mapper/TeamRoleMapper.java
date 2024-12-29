@@ -1,18 +1,24 @@
 package com.teamconnect.mapper;
 
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import com.teamconnect.api.input.team.TeamRoleCreateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
-import com.teamconnect.api.output.team.TeamRoleOutput;
+import com.teamconnect.api.output.teamrole.TeamRoleOutput;
+import com.teamconnect.api.output.teamrole.TeamRolePrivateOutput;
+import com.teamconnect.api.output.teamrole.TeamRolePublicOutput;
 import com.teamconnect.dto.TeamRoleDto;
 import com.teamconnect.model.sql.TeamRole;
 
 @Mapper(componentModel = "spring")
+@Component
 public interface TeamRoleMapper {
     TeamRoleMapper INSTANCE = Mappers.getMapper(TeamRoleMapper.class);
 
@@ -32,4 +38,8 @@ public interface TeamRoleMapper {
     void updateTeamRoleFromUpdateInput(TeamRoleUpdateInput input, @MappingTarget TeamRole teamRole);
 
     TeamRoleOutput teamRoleDtoToTeamRoleOutput(TeamRoleDto teamRoleDto);
+
+    List<TeamRolePublicOutput> teamRoleDtoListToTeamRolePublicOutputList(List<TeamRoleDto> teamRoleDtoList);
+
+    List<TeamRolePrivateOutput> teamRoleDtoListToTeamRolePrivateOutputList(List<TeamRoleDto> teamRoleDtoList);
 }

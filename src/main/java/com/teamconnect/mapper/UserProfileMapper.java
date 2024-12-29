@@ -1,17 +1,20 @@
 package com.teamconnect.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
+
 import com.teamconnect.api.input.user.UserUpdateProfileInput;
 import com.teamconnect.api.output.user.UserProfilePrivateOutput;
 import com.teamconnect.api.output.user.UserProfilePublicOutput;
 import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.model.sql.UserProfile;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
-import org.mapstruct.NullValuePropertyMappingStrategy;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Component
 public interface UserProfileMapper {
     UserProfileMapper INSTANCE = Mappers.getMapper(UserProfileMapper.class);
 

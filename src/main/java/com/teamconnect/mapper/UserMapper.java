@@ -5,6 +5,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
 import com.teamconnect.api.input.user.UserRegisterInput;
 import com.teamconnect.api.input.user.UserUpdateInput;
@@ -12,7 +13,6 @@ import com.teamconnect.api.output.user.UserDetailsPrivateOutput;
 import com.teamconnect.api.output.user.UserDetailsPublicOutput;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.model.sql.User;
-import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 @Component
