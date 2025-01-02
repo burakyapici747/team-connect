@@ -1,10 +1,5 @@
 package com.teamconnect.service.impl;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.teamconnect.api.input.team.TeamCreateInput;
 import com.teamconnect.api.input.team.TeamDeleteInput;
 import com.teamconnect.api.input.team.TeamUpdateInput;
@@ -19,6 +14,10 @@ import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.TeamRepository;
 import com.teamconnect.service.TeamService;
 import com.teamconnect.service.UserService;
+import java.util.List;
+import org.springframework.stereotype.Service;
+
+
 
 @Service
 public class TeamServiceImpl implements TeamService {

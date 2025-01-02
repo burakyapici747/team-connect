@@ -1,11 +1,10 @@
 package com.teamconnect.model.nosql;
 
 import jakarta.persistence.Id;
+import java.time.Instant;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
-import org.springframework.data.annotation.TypeAlias;
-
-import java.time.Instant;
 
 @Document
 @TypeAlias("notification")

@@ -1,38 +1,44 @@
 package com.teamconnect.model.nosql;
 
 import com.teamconnect.common.enumarator.MessageTargetType;
-import jakarta.persistence.*;
-import org.springframework.data.annotation.TypeAlias;
+import java.time.Instant;
+import java.util.List;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
 
-import java.time.Instant;
-import java.util.List;
-
 @Document
-@TypeAlias("message")
 public class Message {
     @Id
     private String id;
+    
     @Field
     private String receiverId;
+    
     @Field
     private String senderId;
+    
     @Field
     private String parentMessageId;
+    
     @Field
-    @Enumerated(EnumType.STRING)
     private MessageTargetType targetType;
+    
     @Field
     private String content;
+    
     @Field
     private List<Reaction> reactions;
+    
     @Field
     private boolean isDeleted;
+    
     @Field
-    private boolean isPinned;
+    private boolean pinned;
+    
     @Field
     private Instant createdAt;
+    
     @Field
     private Instant updatedAt;
 
@@ -145,15 +151,15 @@ public class Message {
         return isDeleted;
     }
 
-    public void setDeleted(boolean deleted) {
-        isDeleted = deleted;
+    public void setIsDeleted(boolean deleted) {
+        this.isDeleted = deleted;
     }
 
     public boolean isPinned() {
-        return isPinned;
+        return pinned;
     }
 
     public void setPinned(boolean pinned) {
-        isPinned = pinned;
+        this.pinned = pinned;
     }
 }
