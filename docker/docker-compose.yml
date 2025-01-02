@@ -20,6 +20,22 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7.2-alpine
+    container_name: teamconnect-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - teamconnect-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   couchbase:
     build:
       context: .
@@ -47,4 +63,7 @@ volumes:
     driver: local
   couchbase_data:
     name: teamconnect_couchbase_data
+    driver: local
+  redis_data:
+    name: teamconnect_redis_data
     driver: local 
