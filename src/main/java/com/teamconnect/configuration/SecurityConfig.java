@@ -1,5 +1,12 @@
 package com.teamconnect.configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.teamconnect.exception.CustomAuthenticationFailureHandler;
+import com.teamconnect.filter.CustomAuthenticationFilter;
+import com.teamconnect.filter.CustomAuthorizationFilter;
+import com.teamconnect.security.CustomAuthenticationProvider;
+import com.teamconnect.service.impl.JWTService;
+import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,15 +18,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.teamconnect.exception.CustomAuthenticationFailureHandler;
-import com.teamconnect.filter.CustomAuthenticationFilter;
-import com.teamconnect.filter.CustomAuthorizationFilter;
-import com.teamconnect.security.CustomAuthenticationProvider;
-import com.teamconnect.service.impl.JWTService;
-
-import jakarta.validation.Validator;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
@@ -40,9 +39,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(
-            HttpSecurity http,
-            CustomAuthenticationFilter customAuthenticationFilter) throws Exception {
+        HttpSecurity http,
+        CustomAuthenticationFilter customAuthenticationFilter,
+        CorsConfigurationSource corsConfigurationSource
+    ) throws Exception {
         return http
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(customAuthenticationProvider)
@@ -54,22 +56,23 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(
-            AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
     @Bean
     public CustomAuthenticationFilter customAuthenticationFilter(
-            AuthenticationManager authenticationManager,
-            Validator validator,
-            JWTService jwtService,
-            ObjectMapper objectMapper) {
+        AuthenticationManager authenticationManager,
+        Validator validator,
+        JWTService jwtService,
+        ObjectMapper objectMapper
+    ) {
         return new CustomAuthenticationFilter(
-                authenticationManager,
-                validator,
-                jwtService,
-                objectMapper,
-                customAuthenticationFailureHandler);
+            authenticationManager,
+            validator,
+            jwtService,
+            objectMapper,
+            customAuthenticationFailureHandler
+        );
     }
 }
