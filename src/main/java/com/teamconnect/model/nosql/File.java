@@ -1,17 +1,17 @@
 package com.teamconnect.model.nosql;
 
-import java.time.Instant;
-
 import com.teamconnect.common.enumarator.FileType;
 import jakarta.persistence.*;
+import java.time.Instant;
+import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.couchbase.core.mapping.Document;
 import org.springframework.data.couchbase.core.mapping.Field;
-import org.springframework.data.annotation.TypeAlias;
 
 @Document
 @TypeAlias("file")
 public class File {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
     @Field
     private String userId;

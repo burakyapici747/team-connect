@@ -14,6 +14,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
+import java.io.IOException;
+import java.util.Set;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,9 +25,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
-
-import java.io.IOException;
-import java.util.Set;
 
 @Component
 public class CustomAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
@@ -73,11 +72,25 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         HttpServletResponse response,
         FilterChain chain,
         Authentication authResult
-    ) throws IOException, ServletException{
+    ) throws IOException, ServletException {
         SecurityContextHolder.getContext().setAuthentication(authResult);
         CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
         String accessToken = jwtService.generateToken(userDetails);
-        sendSuccessAuthenticationResponse(response, accessToken);
+        
+        sendSuccessAuthenticationCookie(response, accessToken);
+    }
+
+    private void sendSuccessAuthenticationCookie(
+        HttpServletResponse response,
+        String accessToken
+    ) {
+        jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", accessToken);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+        cookie.setPath("/");
+        cookie.setMaxAge(24 * 60 * 60);
+        
+        response.addCookie(cookie);
     }
 
     private void validateLoginInput(UserLoginInput userLoginInput) {
