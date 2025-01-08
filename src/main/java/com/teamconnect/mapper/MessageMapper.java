@@ -3,7 +3,7 @@ package com.teamconnect.mapper;
 import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.MessageOutput;
 import com.teamconnect.dto.MessageDto;
-import com.teamconnect.model.nosql.Message;
+
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,4 +38,4 @@ public interface MessageMapper {
     @Mapping(target = "userId", source = "userId")
     @Mapping(target = "reactionType", source = "reactionType")
     MessageOutput.ReactionOutput reactionDtoToReactionOutput(MessageDto.ReactionDto reactionDto);
-} 
+}

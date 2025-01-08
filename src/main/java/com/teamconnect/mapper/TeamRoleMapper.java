@@ -6,7 +6,7 @@ import com.teamconnect.api.output.teamrole.TeamRoleOutput;
 import com.teamconnect.api.output.teamrole.TeamRolePrivateOutput;
 import com.teamconnect.api.output.teamrole.TeamRolePublicOutput;
 import com.teamconnect.dto.TeamRoleDto;
-import com.teamconnect.model.sql.TeamRole;
+
 import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
