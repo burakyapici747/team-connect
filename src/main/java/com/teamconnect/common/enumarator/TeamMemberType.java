@@ -1,4 +1,16 @@
 package com.teamconnect.common.enumarator;
 
-public class TeamMemberType {
+public enum TeamMemberType {
+    CREATOR("CREATOR"),
+    MEMBER("MEMBER");
+
+    private final String value;
+
+    TeamMemberType(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }
