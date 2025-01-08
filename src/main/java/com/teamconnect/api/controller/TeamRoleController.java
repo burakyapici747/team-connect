@@ -24,7 +24,6 @@ import com.teamconnect.api.output.teamrole.TeamRoleOutput;
 import com.teamconnect.api.output.teamrole.TeamRolePrivateOutput;
 import com.teamconnect.api.output.teamrole.TeamRolePublicOutput;
 import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.mapper.TeamRoleMapper;
 import com.teamconnect.service.TeamRoleService;
 

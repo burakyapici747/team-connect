@@ -5,7 +5,6 @@ import com.teamconnect.api.input.TeamMemberRoleAssignInput;
 import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.api.output.teammember.TeamMemberPublicOutput;
 import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.mapper.TeamMemberMapper;
 import com.teamconnect.service.TeamMemberService;
 import jakarta.validation.Valid;

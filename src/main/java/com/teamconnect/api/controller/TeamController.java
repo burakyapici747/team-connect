@@ -8,7 +8,6 @@ import com.teamconnect.api.output.team.TeamCreateOutput;
 import com.teamconnect.api.output.team.TeamPublicDetailsOutput;
 import com.teamconnect.api.output.teammember.TeamPrivateOutput;
 import com.teamconnect.common.annotation.RequireTeamPermission;
-import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.service.TeamService;
 import jakarta.validation.Valid;

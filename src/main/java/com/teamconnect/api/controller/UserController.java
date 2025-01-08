@@ -1,6 +1,7 @@
 package com.teamconnect.api.controller;
 
 import com.teamconnect.api.input.team.TeamPublicOutput;
+import com.teamconnect.common.enumarator.UserStatus;
 import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.TeamService;
@@ -27,7 +28,6 @@ import com.teamconnect.api.output.user.UserDetailsPrivateOutput;
 import com.teamconnect.api.output.user.UserDetailsPublicOutput;
 import com.teamconnect.api.output.user.UserProfilePrivateOutput;
 import com.teamconnect.api.output.user.UserProfilePublicOutput;
-import com.teamconnect.common.enumarator.Availability;
 import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.mapper.UserMapper;
 import com.teamconnect.mapper.UserProfileMapper;
@@ -107,7 +107,7 @@ public class UserController {
     }
 
     @PutMapping("/me/availability")
-    public ResponseEntity<ResponseWrapper<Availability>> updateAvailability(
+    public ResponseEntity<ResponseWrapper<UserStatus>> updateAvailability(
         @AuthenticationPrincipal UserDetails userDetails,
         @Valid @RequestBody UserUpdateAvailabilityInput input
     ) {
