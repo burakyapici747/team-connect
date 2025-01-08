@@ -1,4 +1,4 @@
 package com.teamconnect.model.nosql;
 
-public class Message {
+public class Channel {
 }
