@@ -10,6 +10,7 @@ import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfigurationSource;
 
 @Configuration
@@ -29,9 +31,10 @@ public class SecurityConfig {
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
 
     public SecurityConfig(
-            CustomAuthenticationProvider customAuthenticationProvider,
-            CustomAuthorizationFilter customAuthorizationFilter,
-            CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
+        CustomAuthenticationProvider customAuthenticationProvider,
+        CustomAuthorizationFilter customAuthorizationFilter,
+        CustomAuthenticationFailureHandler customAuthenticationFailureHandler
+    ) {
         this.customAuthenticationProvider = customAuthenticationProvider;
         this.customAuthorizationFilter = customAuthorizationFilter;
         this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
@@ -44,15 +47,16 @@ public class SecurityConfig {
         CorsConfigurationSource corsConfigurationSource
     ) throws Exception {
         return http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(customAuthenticationProvider)
-                .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
-                .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll())
-                .build();
+            //.cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .securityMatcher(new AntPathRequestMatcher("/v1/api/**"))
+            .cors(Customizer.withDefaults())
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authenticationProvider(customAuthenticationProvider)
+            .addFilterBefore(customAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(customAuthorizationFilter, CustomAuthenticationFilter.class)
+            .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
+            .build();
     }
 
     @Bean

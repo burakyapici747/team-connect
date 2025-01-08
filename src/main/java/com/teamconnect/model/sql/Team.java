@@ -1,70 +1,30 @@
 package com.teamconnect.model.sql;
 
 import jakarta.persistence.*;
-import java.util.ArrayList;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-
+@Getter
+@Setter
 @Entity
 @Table(name = "TEAM")
-public class Team extends BaseModel{
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private Set<TeamMember> teamMembers = new HashSet<>();
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "team_id", referencedColumnName = "id")
-    private Set<TeamRole> teamRoles = new HashSet<>();
-
-    @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Meeting> meetings = new ArrayList<>();
-
+public class Team extends BaseModel {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = true)
+    @Column(name = "description")
     private String description;
 
-    public Set<TeamMember> getTeamMembers() {
-        return teamMembers;
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private User owner;
 
-    public void setTeamMembers(Set<TeamMember> teamMembers) {
-        this.teamMembers = teamMembers;
-    }
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<TeamMember> members = new HashSet<>();
 
-    public Set<TeamRole> getTeamRoles() {
-        return teamRoles;
-    }
-
-    public void setTeamRoles(Set<TeamRole> teamRoles) {
-        this.teamRoles = teamRoles;
-    }
-
-    public List<Meeting> getMeetings() {
-        return meetings;
-    }
-
-    public void setMeetings(List<Meeting> meetings) {
-        this.meetings = meetings;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<TeamChannel> channels = new HashSet<>();
 }

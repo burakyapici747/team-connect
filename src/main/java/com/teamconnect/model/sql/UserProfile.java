@@ -1,66 +1,67 @@
 package com.teamconnect.model.sql;
 
-import com.teamconnect.common.enumarator.Availability;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+import org.hibernate.annotations.Type;
 
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.Map;
+
+@Getter
+@Setter
 @Entity
-@Table(name = "USER_PROFILE")
+@Table(name = "user_profiles")
 public class UserProfile extends BaseModel {
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    private User user;
+
+    @Column(name = "full_name")
+    private String fullName;
+
     @Column(name = "bio")
     private String bio;
 
-    @Column(name = "profile_image_file_id")
-    private String profileImageFileId;
+    @Column(name = "title")
+    private String title;
 
-    @Column(name = "language")
-    private String language;
+    @Column(name = "phone")
+    private String phone;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "availability")
-    private Availability availability;
+    @Column(name = "location")
+    private String location;
 
-    @Column(name = "status_description")
-    private String statusDescription;
+    @Column(name = "timezone")
+    private String timezone;
 
-    public String getBio() {
-        return bio;
-    }
+    @Column(name = "language", length = 10)
+    private String language = "en";
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
+    @Column(name = "birthday")
+    private Instant birthday;
 
-    public String getProfileImageFileId() {
-        return profileImageFileId;
-    }
+    @Column(name = "gender")
+    private String gender;
 
-    public void setProfileImageFileId(String profileImageFileId) {
-        this.profileImageFileId = profileImageFileId;
-    }
+    @Column(name = "company")
+    private String company;
 
-    public String getLanguage() {
-        return language;
-    }
+    @Column(name = "department")
+    private String department;
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+    @Column(name = "position")
+    private String position;
 
-    public Availability getAvailability() {
-        return availability;
-    }
+    @Column(name = "website")
+    private String website;
 
-    public void setAvailability(Availability availability) {
-        this.availability = availability;
-    }
+    @Column(name = "theme_preference")
+    private String themePreference = "light";
 
-    public String getStatusDescription() {
-        return statusDescription;
-    }
-
-    public void setStatusDescription(String statusDescription) {
-        this.statusDescription = statusDescription;
-    }
-
-    
+    @Type(value = JsonBinaryType.class)
+    @Column(name = "notification_preferences", columnDefinition = "jsonb")
+    private Map<String, Map<String, Boolean>> notificationPreferences = new HashMap<>();
 }

@@ -1,12 +1,12 @@
 package com.teamconnect.dto;
 
-import com.teamconnect.common.enumarator.Availability;
+import com.teamconnect.common.enumarator.UserStatus;
 
 public record UserProfileDto(
     String id,
     String bio,
     String language,
     String profileImageFileId,
-    Availability availability,
+    UserStatus userStatus,
     String statusDescription
-) {} 
+) {}

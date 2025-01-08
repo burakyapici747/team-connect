@@ -1,126 +1,47 @@
 package com.teamconnect.model.sql;
 
+import com.teamconnect.common.enumarator.UserStatus;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.Instant;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
-import com.teamconnect.common.enumarator.Role;
-
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
-
+@Getter
+@Setter
 @Entity
 @Table(name = "USERS")
 public class User extends BaseModel {
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private UserProfile userProfile;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private List<TeamMember> teamMembers;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "user")
-    private List<Meeting> meetings;
+    @Column(name = "username", nullable = false, unique = true)
+    private String username;
 
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "password_hash", nullable = false)
+    private String passwordHash;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 
-    @Column(name = "last_name", nullable = false)
-    private String lastName;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private UserStatus status = UserStatus.OFFLINE;
 
-    @Column(name = "last_seen_at", nullable = true)
+    @Column(name = "last_seen_at")
     private Instant lastSeenAt;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role")
-    private Set<Role> roles;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserProfile userProfile;
 
-    public UserProfile getUserProfile() {
-        return userProfile;
-    }
+    @OneToMany(mappedBy = "owner", fetch = FetchType.LAZY)
+    private Set<Team> ownedTeams = new HashSet<>();
 
-    public void setUserProfile(UserProfile userProfile) {
-        this.userProfile = userProfile;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<TeamMember> teamMembers = new HashSet<>();
 
-    public List<TeamMember> getTeamMembers() {
-        return teamMembers;
-    }
-
-    public void setTeamMembers(List<TeamMember> teamMembers) {
-        this.teamMembers = teamMembers;
-    }
-
-    public List<Meeting> getMeetings() {
-        return meetings;
-    }
-
-    public void setMeetings(List<Meeting> meetings) {
-        this.meetings = meetings;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public Instant getLastSeenAt() {
-        return lastSeenAt;
-    }
-
-    public void setLastSeenAt(Instant lastSeenAt) {
-        this.lastSeenAt = lastSeenAt;
-    }
-
-    public Set<Role> getRoles() {
-        return roles;
-    }
-
-    public void setRoles(Set<Role> roles) {
-        this.roles = roles;
-    }
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<UserRole> userRoles = new HashSet<>();
 }

@@ -1,6 +1,6 @@
 package com.teamconnect.common.enumarator;
 
-public enum Availability {
+public enum UserStatus {
     ONLINE("ONLINE"),
     AWAY("AWAY"),
     BUSY("BUSY"),
@@ -8,7 +8,7 @@ public enum Availability {
 
     private final String value;
 
-    Availability(String value) {
+    UserStatus(String value) {
         this.value = value;
     }
 
