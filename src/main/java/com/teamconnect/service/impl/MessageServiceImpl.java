@@ -5,7 +5,6 @@ import com.teamconnect.dto.MessageDto;
 import com.teamconnect.exception.MessageNotFoundException;
 import com.teamconnect.exception.UnauthorizedAccessException;
 import com.teamconnect.mapper.MessageMapper;
-import com.teamconnect.model.nosql.Message;
 import com.teamconnect.repository.nosql.MessageRepository;
 import com.teamconnect.service.MessageService;
 import java.time.Instant;
@@ -31,7 +30,7 @@ public class MessageServiceImpl implements MessageService {
         message.setSenderId(senderId);
         message.setCreatedAt(Instant.now());
         message.setUpdatedAt(Instant.now());
-        
+
         Message savedMessage = messageRepository.save(message);
         return messageMapper.messageToMessageDto(savedMessage);
     }
@@ -45,7 +44,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public List<MessageDto> getMessagesByReceiverId(String receiverId, Long timestamp, int limit) {
         Instant since = timestamp != null ? Instant.ofEpochMilli(timestamp) : null;
-        List<Message> messages = since != null 
+        List<Message> messages = since != null
             ? messageRepository.findByReceiverIdAndIsDeletedFalseAndCreatedAtBeforeOrderByCreatedAtDesc(receiverId, since, limit)
             : messageRepository.findByReceiverIdAndIsDeletedFalseOrderByCreatedAtDesc(receiverId, limit);
         return messageMapper.messagesToMessageDtos(messages);
@@ -90,4 +89,4 @@ public class MessageServiceImpl implements MessageService {
             throw new UnauthorizedAccessException("You don't have permission to modify this message");
         }
     }
-} 
+}

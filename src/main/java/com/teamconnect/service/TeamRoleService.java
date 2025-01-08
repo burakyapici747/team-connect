@@ -6,9 +6,7 @@ import java.util.Set;
 import com.teamconnect.api.input.team.TeamRoleCreateInput;
 import com.teamconnect.api.input.team.TeamRolePermissionUpdateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
-import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.dto.TeamRoleDto;
-import com.teamconnect.model.sql.TeamRole;
 
 public interface TeamRoleService {
     TeamRoleDto createTeamRole(String teamId, TeamRoleCreateInput input);

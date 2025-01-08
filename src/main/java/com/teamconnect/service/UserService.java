@@ -6,7 +6,7 @@ import com.teamconnect.api.input.user.UserUpdateAvailabilityInput;
 import com.teamconnect.api.input.user.UserUpdateInput;
 import com.teamconnect.api.input.user.UserUpdatePasswordInput;
 import com.teamconnect.api.input.user.UserUpdateProfileInput;
-import com.teamconnect.common.enumarator.Availability;
+import com.teamconnect.common.enumarator.UserStatus;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.model.sql.User;
@@ -26,7 +26,7 @@ public interface UserService {
 
     UserProfileDto getUserProfileByUserEmail(String email);
 
-    Availability updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input);
+    UserStatus updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input);
 
     void deleteUserByEmail(String email, UserDeleteInput input);
 

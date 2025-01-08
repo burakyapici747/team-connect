@@ -2,8 +2,6 @@ package com.teamconnect.service;
 
 import java.util.List;
 
-import com.teamconnect.common.enumarator.TeamPermission;
-
 public interface PermissionService {
     boolean hasTeamPermission(String teamId, String userId, TeamPermission permission);
 

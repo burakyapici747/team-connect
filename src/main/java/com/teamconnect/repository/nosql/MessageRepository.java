@@ -1,6 +1,5 @@
 package com.teamconnect.repository.nosql;
 
-import com.teamconnect.model.nosql.Message;
 import java.time.Instant;
 import java.util.List;
 import org.springframework.data.couchbase.repository.CouchbaseRepository;
@@ -10,26 +9,26 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MessageRepository extends CouchbaseRepository<Message, String> {
-    
+
     List<Message> findByReceiverIdAndIsDeletedFalseAndCreatedAtBeforeOrderByCreatedAtDesc(
-        String receiverId, 
-        Instant createdAt, 
+        String receiverId,
+        Instant createdAt,
         int limit
     );
-    
+
     List<Message> findByReceiverIdAndIsDeletedFalseOrderByCreatedAtDesc(
-        String receiverId, 
+        String receiverId,
         int limit
     );
-    
+
     List<Message> findBySenderIdAndIsDeletedFalseAndCreatedAtBeforeOrderByCreatedAtDesc(
-        String senderId, 
-        Instant createdAt, 
+        String senderId,
+        Instant createdAt,
         int limit
     );
-    
+
     List<Message> findBySenderIdAndIsDeletedFalseOrderByCreatedAtDesc(
-        String senderId, 
+        String senderId,
         int limit
     );
 
@@ -41,4 +40,4 @@ public interface MessageRepository extends CouchbaseRepository<Message, String> 
     @Query("SELECT COUNT(*) FROM #{#n1ql.bucket} " +
            "WHERE receiverId = $1 AND isDeleted = false AND isRead = false")
     Long countUnreadMessages(String userId);
-} 
+}
