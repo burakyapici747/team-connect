@@ -1,6 +1,7 @@
 package com.teamconnect.service.impl;
 
 import com.teamconnect.api.input.message.MessageCreateInput;
+import com.teamconnect.configuration.RabbitMQConfig;
 import com.teamconnect.mapper.MessageMapper;
 import com.teamconnect.mapper.WebSocketMessageMapper;
 import com.teamconnect.model.websocket.WebSocketMessage;
@@ -11,6 +12,8 @@ import java.time.Instant;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -27,25 +30,38 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
     private final RedisMessageService redisMessageService;
     private final WebSocketMessageMapper webSocketMessageMapper;
     private final MessageMapper messageMapper;
+    private final RabbitMQConfig rabbitMQConfig;
+    private final RabbitAdmin rabbitAdmin;
 
     public WebSocketMessageServiceImpl(
         SimpMessagingTemplate messagingTemplate,
         MessageService messageService,
         RedisMessageService redisMessageService,
         WebSocketMessageMapper webSocketMessageMapper,
-        MessageMapper messageMapper
+        MessageMapper messageMapper,
+        RabbitMQConfig rabbitMQConfig,
+        RabbitAdmin rabbitAdmin
     ) {
         this.messagingTemplate = messagingTemplate;
         this.messageService = messageService;
         this.redisMessageService = redisMessageService;
         this.webSocketMessageMapper = webSocketMessageMapper;
         this.messageMapper = messageMapper;
+        this.rabbitMQConfig = rabbitMQConfig;
+        this.rabbitAdmin = rabbitAdmin;
     }
 
     @Override
     public void sendPrivateMessage(WebSocketMessage message, String senderId) {
         WebSocketMessage enrichedMessage = webSocketMessageMapper.enrichWebSocketMessage(message, senderId);
         MessageCreateInput messageCreateInput = webSocketMessageMapper.webSocketMessageToMessageCreateInput(enrichedMessage);
+        
+        // Create private chat queue if it doesn't exist
+        Queue privateQueue = rabbitMQConfig.createPrivateChatQueue(
+            Long.parseLong(senderId), 
+            Long.parseLong(message.receiverId())
+        );
+        rabbitMQConfig.declareQueue(privateQueue, rabbitAdmin);
         
         messageService.createMessage(messageCreateInput, senderId);
         deliverMessage(enrichedMessage);

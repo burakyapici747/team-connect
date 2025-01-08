@@ -3,11 +3,9 @@ package com.teamconnect.service.impl;
 import com.teamconnect.api.input.team.TeamRoleCreateInput;
 import com.teamconnect.api.input.team.TeamRolePermissionUpdateInput;
 import com.teamconnect.api.input.team.TeamRoleUpdateInput;
-import com.teamconnect.common.enumarator.TeamPermission;
 import com.teamconnect.dto.TeamRoleDto;
 import com.teamconnect.mapper.TeamRoleMapper;
 import com.teamconnect.model.sql.Team;
-import com.teamconnect.model.sql.TeamRole;
 import com.teamconnect.repository.TeamRoleRepository;
 import com.teamconnect.service.TeamRoleService;
 import com.teamconnect.service.TeamService;
@@ -41,7 +39,7 @@ public class TeamRoleServiceImpl implements TeamRoleService {
     @Override
     public TeamRoleDto createTeamRole(String teamId, TeamRoleCreateInput input) {
         Team team = teamService.getTeamEntityById(teamId);
-        
+
         validateTeamRoleNameIsNotExist(team, input.name());
 
         TeamRole teamRole = TeamRoleMapper.INSTANCE.teamRoleCreateInputToTeamRole(input);
@@ -148,10 +146,10 @@ public class TeamRoleServiceImpl implements TeamRoleService {
             throw new IllegalArgumentException("Team role with name " + roleName + " already exists");
         }
     }
-    
+
     private void validateTeamRoleNameIsNotExistIdNot(Team team, String roleName, String excludeRoleId) {
         if (team.getTeamRoles().stream().anyMatch(role -> role.getName().equals(roleName) && !role.getId().equals(excludeRoleId))) {
             throw new IllegalArgumentException("Team role with name " + roleName + " already exists");
         }
-    } 
+    }
 }

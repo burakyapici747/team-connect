@@ -2,12 +2,10 @@ package com.teamconnect.service.impl;
 
 import com.teamconnect.api.input.TeamMemberCreateInput;
 import com.teamconnect.api.input.TeamMemberRoleAssignInput;
-import com.teamconnect.common.enumarator.TeamMemberType;
 import com.teamconnect.dto.TeamMemberDto;
 import com.teamconnect.mapper.TeamMemberMapper;
 import com.teamconnect.model.sql.Team;
 import com.teamconnect.model.sql.TeamMember;
-import com.teamconnect.model.sql.TeamRole;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.TeamMemberRepository;
 import com.teamconnect.service.TeamMemberService;

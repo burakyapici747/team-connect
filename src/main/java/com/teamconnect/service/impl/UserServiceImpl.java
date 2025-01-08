@@ -2,6 +2,7 @@ package com.teamconnect.service.impl;
 
 import java.util.Set;
 
+import com.teamconnect.common.enumarator.UserStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -11,7 +12,6 @@ import com.teamconnect.api.input.user.UserUpdateAvailabilityInput;
 import com.teamconnect.api.input.user.UserUpdateInput;
 import com.teamconnect.api.input.user.UserUpdatePasswordInput;
 import com.teamconnect.api.input.user.UserUpdateProfileInput;
-import com.teamconnect.common.enumarator.Availability;
 import com.teamconnect.common.enumarator.Role;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.dto.UserProfileDto;
@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(input.password()));
         user.setRoles(Set.of(Role.ROLE_USER));
         UserProfile userProfile = new UserProfile();
-        userProfile.setAvailability(Availability.ONLINE);
+        userProfile.setAvailability(UserStatus.ONLINE);
         user.setUserProfile(userProfile);
         return UserMapper.INSTANCE.userToUserDto(userRepository.save(user));
     }
@@ -77,9 +77,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Availability updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input) {
+    public UserStatus updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input) {
         UserProfile userProfile = findUserProfileByUserEmail(email);
-        userProfile.setAvailability(input.availability());
+        userProfile.setAvailability(input.userStatus());
         userProfileRepository.save(userProfile);
         return userProfile.getAvailability();
     }
