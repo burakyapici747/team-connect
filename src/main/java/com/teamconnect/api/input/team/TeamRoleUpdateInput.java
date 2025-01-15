@@ -11,7 +11,7 @@ public record TeamRoleUpdateInput(
         @Size(max = 200, message = "Description cannot exceed 200 characters")
         String description,
 
-        Set<TeamPermission> permissions,
+//        Set<TeamPermission> permissions,
 
         Boolean isDefault
 ) {}
