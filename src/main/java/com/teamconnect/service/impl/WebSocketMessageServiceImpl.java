@@ -26,7 +26,6 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
     private static final String TOPIC_STATUS = "/topic/status";
 
     private final SimpMessagingTemplate messagingTemplate;
-    private final MessageService messageService;
     private final RedisMessageService redisMessageService;
     private final WebSocketMessageMapper webSocketMessageMapper;
     private final MessageMapper messageMapper;
@@ -35,7 +34,6 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
 
     public WebSocketMessageServiceImpl(
         SimpMessagingTemplate messagingTemplate,
-        MessageService messageService,
         RedisMessageService redisMessageService,
         WebSocketMessageMapper webSocketMessageMapper,
         MessageMapper messageMapper,
@@ -43,7 +41,6 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
         RabbitAdmin rabbitAdmin
     ) {
         this.messagingTemplate = messagingTemplate;
-        this.messageService = messageService;
         this.redisMessageService = redisMessageService;
         this.webSocketMessageMapper = webSocketMessageMapper;
         this.messageMapper = messageMapper;
@@ -51,21 +48,21 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
         this.rabbitAdmin = rabbitAdmin;
     }
 
-    @Override
-    public void sendPrivateMessage(WebSocketMessage message, String senderId) {
-        WebSocketMessage enrichedMessage = webSocketMessageMapper.enrichWebSocketMessage(message, senderId);
-        MessageCreateInput messageCreateInput = webSocketMessageMapper.webSocketMessageToMessageCreateInput(enrichedMessage);
-        
-        // Create private chat queue if it doesn't exist
-        Queue privateQueue = rabbitMQConfig.createPrivateChatQueue(
-            Long.parseLong(senderId), 
-            Long.parseLong(message.receiverId())
-        );
-        rabbitMQConfig.declareQueue(privateQueue, rabbitAdmin);
-        
-        messageService.createMessage(messageCreateInput, senderId);
-        deliverMessage(enrichedMessage);
-    }
+//    @Override
+//    public void sendPrivateMessage(WebSocketMessage message, String senderId) {
+//        WebSocketMessage enrichedMessage = webSocketMessageMapper.enrichWebSocketMessage(message, senderId);
+//        MessageCreateInput messageCreateInput = webSocketMessageMapper.webSocketMessageToMessageCreateInput(enrichedMessage);
+//
+//        // Create private chat queue if it doesn't exist
+//        Queue privateQueue = rabbitMQConfig.createPrivateChatQueue(
+//            Long.parseLong(senderId),
+//            Long.parseLong(message.receiverId())
+//        );
+//        rabbitMQConfig.declareQueue(privateQueue, rabbitAdmin);
+//
+//        messageService.createMessage(messageCreateInput, senderId);
+//        deliverMessage(enrichedMessage);
+//    }
 
     @Override
     public void updateMessageStatus(WebSocketMessageStatus status, String userId) {
@@ -96,14 +93,14 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
     private void deliverMessage(WebSocketMessage message) {
         try {
             messagingTemplate.convertAndSendToUser(
-                message.receiverId(),
+                message.channelId(),
                 USER_QUEUE_MESSAGES,
                 message
             );
-            sendMessageStatus(message.id(), message.senderId(), WebSocketMessageStatus.MessageDeliveryStatus.SENT);
+            sendMessageStatus(message.id(), message.authorId(), WebSocketMessageStatus.MessageDeliveryStatus.SENT);
         } catch (Exception e) {
-            logger.error("Failed to deliver message to user {}: {}", message.receiverId(), e.getMessage());
-            redisMessageService.saveOfflineMessage(message.receiverId(), message);
+            logger.error("Failed to deliver message to user {}: {}", message.channelId(), e.getMessage());
+            redisMessageService.saveOfflineMessage(message.channelId(), message);
         }
     }
 
@@ -132,4 +129,4 @@ public class WebSocketMessageServiceImpl implements WebSocketMessageService {
     }
 
     private record UserStatusMessage(String userId, String status) {}
-} 
+}
