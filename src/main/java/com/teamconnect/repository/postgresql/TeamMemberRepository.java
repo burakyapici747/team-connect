@@ -1,4 +1,4 @@
-package com.teamconnect.repository;
+package com.teamconnect.repository.postgresql;
 
 import java.util.List;
 import java.util.Optional;

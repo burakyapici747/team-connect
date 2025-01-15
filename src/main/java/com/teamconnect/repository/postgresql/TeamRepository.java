@@ -1,4 +1,4 @@
-package com.teamconnect.repository;
+package com.teamconnect.repository.postgresql;
 
 import com.teamconnect.model.sql.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
