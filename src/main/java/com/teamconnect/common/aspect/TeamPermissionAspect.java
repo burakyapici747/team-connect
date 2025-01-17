@@ -10,9 +10,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-
-
-
 @Aspect
 @Component
 public class TeamPermissionAspect {
@@ -30,14 +27,14 @@ public class TeamPermissionAspect {
         CustomUserDetails userDetails = securityService.getCurrentUser();
         String userId = userDetails.getId();
 
-        permissionService.validateTeamPermission(
-            teamId,
-            userId,
-            Arrays.asList(requireTeamPermission.value()),
-            requireTeamPermission.requireAll(),
-            requireTeamPermission.isSelfUserPermission(),
-            requireTeamPermission.justTeamMember()
-        );
+//        permissionService.validateTeamPermission(
+//            teamId,
+//            userId,
+//            Arrays.asList(requireTeamPermission.value()),
+//            requireTeamPermission.requireAll(),
+//            requireTeamPermission.isSelfUserPermission(),
+//            requireTeamPermission.justTeamMember()
+//        );
 
         return joinPoint.proceed();
     }

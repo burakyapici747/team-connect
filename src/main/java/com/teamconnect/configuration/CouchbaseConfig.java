@@ -13,7 +13,6 @@ import org.springframework.data.couchbase.core.convert.CustomConversions;
 import org.springframework.data.couchbase.repository.config.EnableCouchbaseRepositories;
 
 @Configuration
-@EnableCouchbaseRepositories(basePackages = "com.teamconnect.repository.nosql")
 public class CouchbaseConfig extends AbstractCouchbaseConfiguration {
     @Value("${spring.couchbase.connection-string}")
     private String connectionString;
@@ -61,5 +60,5 @@ public class CouchbaseConfig extends AbstractCouchbaseConfiguration {
     @Override
     public CustomConversions customConversions() {
         return new CustomConversions(Collections.emptyList());
-    } 
+    }
 }
