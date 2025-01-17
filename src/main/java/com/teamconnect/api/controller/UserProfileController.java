@@ -4,7 +4,7 @@ import com.teamconnect.service.UserProfileService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/user-profiles")
+@RequestMapping("/v1/api/user-profiles")
 public class UserProfileController {
     private final UserProfileService userProfileService;
 
@@ -12,5 +12,3 @@ public class UserProfileController {
         this.userProfileService = userProfileService;
     }
 }
-
-

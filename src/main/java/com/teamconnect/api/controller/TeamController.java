@@ -2,6 +2,7 @@ package com.teamconnect.api.controller;
 
 import com.teamconnect.api.input.team.TeamCreateInput;
 import com.teamconnect.api.input.team.TeamDeleteInput;
+import com.teamconnect.api.input.team.TeamPublicOutput;
 import com.teamconnect.api.input.team.TeamUpdateInput;
 import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.api.output.team.TeamCreateOutput;
@@ -9,6 +10,7 @@ import com.teamconnect.api.output.team.TeamPublicDetailsOutput;
 import com.teamconnect.api.output.teammember.TeamPrivateOutput;
 import com.teamconnect.common.annotation.RequireTeamPermission;
 import com.teamconnect.mapper.TeamMapper;
+import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.TeamService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -35,7 +37,7 @@ public class TeamController {
 	@GetMapping("/{id}")
 	public ResponseEntity<ResponseWrapper<TeamPublicDetailsOutput>> getTeamById(@PathVariable String id) {
 		return ResponseWrapper.ok(
-				TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(teamService.getTeamById(id)));
+            TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(teamService.getTeamById(id)));
 	}
 
 	@PostMapping
@@ -49,21 +51,21 @@ public class TeamController {
 	}
 
 	@PutMapping("/{id}")
-	@RequireTeamPermission(TeamPermission.UPDATE_TEAM)
 	public ResponseEntity<ResponseWrapper<TeamPrivateOutput>> updateTeam(
 		@AuthenticationPrincipal UserDetails userDetails,
 		@PathVariable String id,
 		@Valid @RequestBody TeamUpdateInput input
 	) {
 		return ResponseWrapper.ok(
-				TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input)));
+            TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input)));
 	}
 
 	@DeleteMapping("/{id}")
 	@RequireTeamPermission
 	public ResponseEntity<ResponseWrapper<Void>> deleteTeam(
-			@PathVariable String id,
-			@Valid @RequestBody TeamDeleteInput input) {
+        @PathVariable String id,
+        @Valid @RequestBody TeamDeleteInput input
+    ) {
 		teamService.deleteTeam(id, input);
 		return ResponseWrapper.noContent();
 	}

@@ -8,10 +8,8 @@ import com.teamconnect.common.annotation.RequireTeamPermission;
 import com.teamconnect.mapper.TeamMemberMapper;
 import com.teamconnect.service.TeamMemberService;
 import jakarta.validation.Valid;
-import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,15 +27,15 @@ public class TeamMemberController {
         this.teamMemberMapper = teamMemberMapper;
     }
 
-    @GetMapping
-    public ResponseEntity<ResponseWrapper<List<TeamMemberPublicOutput>>> getTeamMembers(@PathVariable String teamId) {
-        return ResponseWrapper.ok(teamMemberMapper.teamMemberDtoListToTeamMemberPublicOutputList(
-            teamMemberService.getTeamMembersByTeamId(teamId)
-        ));
-    }
+//    @GetMapping
+//    public ResponseEntity<ResponseWrapper<List<TeamMemberPublicOutput>>> getTeamMembers(@PathVariable String teamId) {
+//        return ResponseWrapper.ok(teamMemberMapper.teamMemberDtoListToTeamMemberPublicOutputList(
+//            teamMemberService.getTeamMembersByTeamId(teamId)
+//        ));
+//    }
 
     @PostMapping
-    @RequireTeamPermission(value = TeamPermission.ADD_MEMBER)
+//    @RequireTeamPermission(value = TeamPermission.ADD_MEMBER)
     public ResponseEntity<ResponseWrapper<TeamMemberPublicOutput>> addMember(
         @PathVariable String teamId,
         @RequestBody TeamMemberCreateInput input
@@ -48,7 +46,7 @@ public class TeamMemberController {
     }
 
     @DeleteMapping("/{memberId}/roles/{roleId}")
-    @RequireTeamPermission(value = TeamPermission.REMOVE_ROLE)
+//    @RequireTeamPermission(value = TeamPermission.REMOVE_ROLE)
     public ResponseEntity<ResponseWrapper<Void>> removeRoleFromMember(
         @PathVariable String teamId,
         @PathVariable String memberId,
@@ -59,7 +57,7 @@ public class TeamMemberController {
     }
 
     @DeleteMapping("/{memberId}")
-    @RequireTeamPermission(value = TeamPermission.REMOVE_MEMBER, isSelfUserPermission = true)
+//    @RequireTeamPermission(value = TeamPermission.REMOVE_MEMBER, isSelfUserPermission = true)
     public ResponseEntity<ResponseWrapper<Void>> removeMember(
         @PathVariable String teamId,
         @PathVariable String memberId
@@ -69,7 +67,7 @@ public class TeamMemberController {
     }
 
     @PostMapping("/{memberId}/roles")
-    @RequireTeamPermission(value = TeamPermission.ASSIGN_ROLE)
+//    @RequireTeamPermission(value = TeamPermission.ASSIGN_ROLE)
     public ResponseEntity<ResponseWrapper<Void>> assignRoleToMember(
         @PathVariable String memberId,
         @Valid @RequestBody TeamMemberRoleAssignInput input
