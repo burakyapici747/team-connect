@@ -1,13 +1,8 @@
 package com.teamconnect.model.sql;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.Instant;
 
-@Getter
-@Setter
 @MappedSuperclass
 public abstract class BaseModel {
     @Id
@@ -29,5 +24,29 @@ public abstract class BaseModel {
     @PreUpdate
     protected void onUpdate() {
         updatedAt = Instant.now();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public Instant getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Instant createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Instant getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(Instant updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }

@@ -85,7 +85,7 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<TeamDto> getUserTeams(String userId) {
+    public List<TeamDto> getTeamsByUserId(String userId) {
         List<Team> teamList = teamRepository.findUserTeams(userId);
 
         return TeamMapper.INSTANCE.teamListToTeamDtoList(teamList);

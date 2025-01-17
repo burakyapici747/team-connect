@@ -4,8 +4,10 @@ import java.util.List;
 import java.util.Set;
 
 import com.teamconnect.api.input.user.*;
+import com.teamconnect.dto.ChannelDto;
 import com.teamconnect.dto.TeamDto;
 import com.teamconnect.model.sql.UserRole;
+import com.teamconnect.service.ChannelService;
 import com.teamconnect.service.TeamService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,21 +28,24 @@ import com.teamconnect.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final TeamService teamService;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TeamService teamService;
+    private final ChannelService channelService;
 
     public UserServiceImpl(
         UserRepository userRepository,
         UserProfileRepository userProfileRepository,
         PasswordEncoder passwordEncoder,
-        @Lazy TeamService teamService
+        @Lazy TeamService teamService,
+        ChannelService channelService
     ) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
+        this.channelService = channelService;
     }
 
     @Override
@@ -51,6 +56,16 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto getUserByEmail(String email) {
         return UserMapper.INSTANCE.userToUserDto(findUserByEmail(email));
+    }
+
+    @Override
+    public List<TeamDto> getUserTeamsByUserId(String userId) {
+        return teamService.getTeamsByUserId(userId);
+    }
+
+    @Override
+    public List<ChannelDto> getUserChannelsByUserId(String userId) {
+        return channelService.getChannelsByUserId(userId);
     }
 
     @Override
@@ -109,17 +124,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserEntityById(String id) {
         return findUserById(id);
-    }
-
-    @Override
-    public List<TeamDto> getCurrentUserTeams(String id){
-        return teamService.getUserTeams(id);
-    }
-
-    @Override
-    public List<TeamDto> getUserTeams(String id){
-        User user = findUserById(id);
-        return teamService.getUserTeams(user.getId());
     }
 
     private User findUserById(String id) {

@@ -1,30 +1,102 @@
 package com.teamconnect.model.nosql;
 
-import com.teamconnect.common.enumarator.MessageType;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.couchbase.core.mapping.Document;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
-@Getter
-@Setter
 @Document
 @TypeAlias("MESSAGE")
 public class Message extends BaseCouchbaseModel{
-    private String chatId;
+    private String channelId;
+    private String authorId;
     private String content;
-    private String senderId;
-    private MessageType type = MessageType.DEFAULT;
-    private Instant editedAt;
-    private Instant deletedAt;
-    private String replyTo;
+    private Instant timestamp;
+    private Instant editedTimestamp;
+    private Boolean pinned;
+    private Integer type;
     private Set<Attachment> attachments = new HashSet<>();
-    private Map<String, Set<String>> reactions = new HashMap<>();
-    private MessageMention mentions;
+    private Set<Mention> mentions = new HashSet<>();
+    private List<Map<String, Object>> reactions = new ArrayList<>();
+
+    public String getChannelId() {
+        return channelId;
+    }
+
+    public void setChannelId(String channelId) {
+        this.channelId = channelId;
+    }
+
+    public String getAuthorId() {
+        return authorId;
+    }
+
+    public void setAuthorId(String authorId) {
+        this.authorId = authorId;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public Instant getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(Instant timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public Instant getEditedTimestamp() {
+        return editedTimestamp;
+    }
+
+    public void setEditedTimestamp(Instant editedTimestamp) {
+        this.editedTimestamp = editedTimestamp;
+    }
+
+    public Boolean getPinned() {
+        return pinned;
+    }
+
+    public void setPinned(Boolean pinned) {
+        this.pinned = pinned;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
+    }
+
+    public Set<Attachment> getAttachments() {
+        return attachments;
+    }
+
+    public void setAttachments(Set<Attachment> attachments) {
+        this.attachments = attachments;
+    }
+
+    public Set<Mention> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(Set<Mention> mentions) {
+        this.mentions = mentions;
+    }
+
+    public List<Map<String, Object>> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(List<Map<String, Object>> reactions) {
+        this.reactions = reactions;
+    }
 }
