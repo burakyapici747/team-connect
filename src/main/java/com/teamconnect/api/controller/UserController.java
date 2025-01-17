@@ -1,7 +1,8 @@
 package com.teamconnect.api.controller;
 
 import com.teamconnect.api.input.team.TeamPublicOutput;
-import com.teamconnect.common.enumarator.UserStatus;
+import com.teamconnect.api.output.channel.ChannelPublicOutput;
+import com.teamconnect.mapper.ChannelMapper;
 import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.TeamService;
@@ -19,7 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.teamconnect.api.input.user.UserDeleteInput;
 import com.teamconnect.api.input.user.UserRegisterInput;
-import com.teamconnect.api.input.user.UserUpdateAvailabilityInput;
 import com.teamconnect.api.input.user.UserUpdateInput;
 import com.teamconnect.api.input.user.UserUpdatePasswordInput;
 import com.teamconnect.api.input.user.UserUpdateProfileInput;
@@ -41,11 +41,27 @@ import java.util.List;
 @RequestMapping("/v1/api/users")
 public class UserController {
     private final UserService userService;
-    private final TeamService teamService;
 
-    public UserController(UserService userService, TeamService teamService) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.teamService = teamService;
+    }
+
+    @GetMapping("/me/teams")
+    public List<TeamPublicOutput> getCurrentUserAllTeams(
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return TeamMapper.INSTANCE.teamDtoListToTeamPublicOutputList(
+            userService.getUserTeamsByUserId(userDetails.getId())
+        );
+    }
+
+    @GetMapping("/me/channels")
+    public List<ChannelPublicOutput> getCurrentUserAllChannels(
+        @AuthenticationPrincipal CustomUserDetails userDetails
+    ) {
+        return ChannelMapper.INSTANCE.channelDtoListToChannelPublicOutputlist(
+            userService.getUserChannelsByUserId(userDetails.getId())
+        );
     }
 
     @GetMapping("/{id}")
@@ -61,26 +77,6 @@ public class UserController {
             UserMapper.INSTANCE.userDtoToUserDetailsPrivateOutput(
                 userService.getUserByEmail(userDetails.getUsername())
             )
-        );
-    }
-
-    @GetMapping("/me/teams")
-    public ResponseEntity<ResponseWrapper<List<TeamPublicOutput>>> getCurrentUserTeams(
-        @AuthenticationPrincipal CustomUserDetails userDetails
-    ) {
-        return ResponseWrapper.ok(
-            TeamMapper.INSTANCE.teamDtoListToTeamPublicOutputList(
-                teamService.getUserTeams(userDetails.getId())
-            )
-        );
-    }
-
-    @GetMapping("/{userId}/teams")
-    public ResponseEntity<ResponseWrapper<List<TeamPublicOutput>>> getUserTeams(
-        @PathVariable String userId
-    ) {
-        return ResponseWrapper.ok(TeamMapper.INSTANCE.teamDtoListToTeamPublicOutputList(
-            teamService.getUserTeams(userId))
         );
     }
 
@@ -106,7 +102,7 @@ public class UserController {
         return ResponseWrapper.noContent();
     }
 
-    @PutMapping("/me/availability")
+    /*@PutMapping("/@me/availability")
     public ResponseEntity<ResponseWrapper<UserStatus>> updateAvailability(
         @AuthenticationPrincipal UserDetails userDetails,
         @Valid @RequestBody UserUpdateAvailabilityInput input
@@ -115,7 +111,7 @@ public class UserController {
             userService.updateAvailabilityByUserEmail(userDetails.getUsername(), input),
             "Availability updated successfully"
         );
-    }
+    }*/
 
     @PostMapping
     public ResponseEntity<ResponseWrapper<UserDetailsPrivateOutput>> register(
@@ -135,7 +131,7 @@ public class UserController {
         return ResponseWrapper.noContent();
     }
 
-    @PutMapping("/me/profile")
+    @PutMapping("/@me/profile")
     public ResponseEntity<ResponseWrapper<UserProfilePrivateOutput>> updateProfile(
         @AuthenticationPrincipal UserDetails userDetails,
         @Valid @RequestBody UserUpdateProfileInput input
@@ -155,12 +151,13 @@ public class UserController {
         );
     }
 
-    @GetMapping("/me/profile")
+    @GetMapping("/@me/profile")
     public ResponseEntity<ResponseWrapper<UserProfilePrivateOutput>> getCurrentUserProfile(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseWrapper.ok(
-                UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePrivateOutput(
-                        userService.getUserProfileByUserEmail(userDetails.getUsername())));
+            UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePrivateOutput(
+                userService.getUserProfileByUserEmail(userDetails.getUsername()))
+        );
     }
 }

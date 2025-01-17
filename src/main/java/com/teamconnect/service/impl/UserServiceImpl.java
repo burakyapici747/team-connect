@@ -1,17 +1,18 @@
 package com.teamconnect.service.impl;
 
+import java.util.List;
 import java.util.Set;
 
-import com.teamconnect.common.enumarator.UserStatus;
+import com.teamconnect.api.input.user.*;
+import com.teamconnect.dto.ChannelDto;
+import com.teamconnect.dto.TeamDto;
+import com.teamconnect.model.sql.UserRole;
+import com.teamconnect.service.ChannelService;
+import com.teamconnect.service.TeamService;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.teamconnect.api.input.user.UserDeleteInput;
-import com.teamconnect.api.input.user.UserRegisterInput;
-import com.teamconnect.api.input.user.UserUpdateAvailabilityInput;
-import com.teamconnect.api.input.user.UserUpdateInput;
-import com.teamconnect.api.input.user.UserUpdatePasswordInput;
-import com.teamconnect.api.input.user.UserUpdateProfileInput;
 import com.teamconnect.common.enumarator.Role;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.dto.UserProfileDto;
@@ -21,21 +22,30 @@ import com.teamconnect.mapper.UserMapper;
 import com.teamconnect.mapper.UserProfileMapper;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.model.sql.UserProfile;
-import com.teamconnect.repository.UserProfileRepository;
-import com.teamconnect.repository.UserRepository;
+import com.teamconnect.repository.postgresql.UserProfileRepository;
+import com.teamconnect.repository.postgresql.UserRepository;
 import com.teamconnect.service.UserService;
 
 @Service
 public class UserServiceImpl implements UserService {
+    private final TeamService teamService;
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ChannelService channelService;
 
-    public UserServiceImpl(UserRepository userRepository, UserProfileRepository userProfileRepository,
-            PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(
+        UserRepository userRepository,
+        UserProfileRepository userProfileRepository,
+        PasswordEncoder passwordEncoder,
+        @Lazy TeamService teamService,
+        ChannelService channelService
+    ) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.passwordEncoder = passwordEncoder;
+        this.teamService = teamService;
+        this.channelService = channelService;
     }
 
     @Override
@@ -49,14 +59,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<TeamDto> getUserTeamsByUserId(String userId) {
+        return teamService.getTeamsByUserId(userId);
+    }
+
+    @Override
+    public List<ChannelDto> getUserChannelsByUserId(String userId) {
+        return channelService.getChannelsByUserId(userId);
+    }
+
+    @Override
     public UserDto createUser(UserRegisterInput input) {
         validateUserEmailIsUnique(input.email());
-        User user = UserMapper.INSTANCE.userRegisterInputToUser(input);
-        user.setPassword(passwordEncoder.encode(input.password()));
-        user.setRoles(Set.of(Role.ROLE_USER));
-        UserProfile userProfile = new UserProfile();
-        userProfile.setAvailability(UserStatus.ONLINE);
-        user.setUserProfile(userProfile);
+        User user = createNewUser(input);
         return UserMapper.INSTANCE.userToUserDto(userRepository.save(user));
     }
 
@@ -74,14 +89,6 @@ public class UserServiceImpl implements UserService {
         User user = findUserByEmail(email);
         user.setPassword(passwordEncoder.encode(input.password()));
         userRepository.save(user);
-    }
-
-    @Override
-    public UserStatus updateAvailabilityByUserEmail(String email, UserUpdateAvailabilityInput input) {
-        UserProfile userProfile = findUserProfileByUserEmail(email);
-        userProfile.setAvailability(input.userStatus());
-        userProfileRepository.save(userProfile);
-        return userProfile.getAvailability();
     }
 
     @Override
@@ -112,6 +119,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserEntityByEmail(String email) {
         return findUserByEmail(email);
+    }
+
+    @Override
+    public User getUserEntityById(String id) {
+        return findUserById(id);
     }
 
     private User findUserById(String id) {
@@ -150,8 +162,14 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    @Override
-    public User getUserEntityById(String id) {
-        return findUserById(id);
+    private User createNewUser(UserRegisterInput input) {
+        User user = UserMapper.INSTANCE.userRegisterInputToUser(input);
+        UserRole userRole = new UserRole();
+        userRole.setRole(Role.ROLE_USER);
+        user.setPassword(passwordEncoder.encode(input.password()));
+        user.setRoles(Set.of(userRole));
+        UserProfile userProfile = new UserProfile();
+        user.setUserProfile(userProfile);
+        return user;
     }
 }

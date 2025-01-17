@@ -29,8 +29,5 @@ public interface UserProfileMapper {
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "bio", source = "bio", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "language", source = "language", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "availability", source = "availability", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "profileImageFileId", source = "profileImageFileId", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "statusDescription", source = "statusDescription", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserProfileFromUpdateProfileInput(UserUpdateProfileInput input, @MappingTarget UserProfile userProfile);
 }

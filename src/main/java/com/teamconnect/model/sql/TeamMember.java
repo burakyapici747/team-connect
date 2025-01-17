@@ -8,11 +8,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.Getter;
-import lombok.Setter;
 
-@Getter
-@Setter
 @Entity
 @Table(name = "TEAM_MEMBER")
 public class TeamMember extends BaseModel {
@@ -26,4 +22,28 @@ public class TeamMember extends BaseModel {
 
     @Enumerated(EnumType.STRING)
     private TeamMemberType memberType;
+
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public TeamMemberType getMemberType() {
+        return memberType;
+    }
+
+    public void setMemberType(TeamMemberType memberType) {
+        this.memberType = memberType;
+    }
 }

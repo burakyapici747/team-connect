@@ -17,7 +17,7 @@ public interface TeamService {
 
     void deleteTeam(String id, TeamDeleteInput input);
 
-    List<TeamDto> getUserTeams(String userId);
+    List<TeamDto> getTeamsByUserId(String userId);
 
     Team getTeamEntityById(String id);
 }

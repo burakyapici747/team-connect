@@ -22,7 +22,7 @@ public class WebSocketMessageController {
         @Payload WebSocketMessage message,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ) {
-        webSocketMessageService.sendPrivateMessage(message, userDetails.getId());
+//        webSocketMessageService.sendPrivateMessage(message, userDetails.getId());
     }
 
     @MessageMapping("/message.status")
@@ -32,4 +32,4 @@ public class WebSocketMessageController {
     ) {
         webSocketMessageService.updateMessageStatus(status, userDetails.getId());
     }
-} 
+}

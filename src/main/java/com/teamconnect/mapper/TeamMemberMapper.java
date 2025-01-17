@@ -19,10 +19,8 @@ public interface TeamMemberMapper {
     @Mapping(target = "memberType", source = "memberType")
     @Mapping(target = "createdAt", source = "createdAt")
     @Mapping(target = "updatedAt", source = "updatedAt")
-    @Mapping(target = "roles", source = "teamRoles")
     TeamMemberDto teamMemberToTeamMemberDto(TeamMember teamMember);
 
-    @Mapping(target = "teamRoles", ignore = true)
     @Mapping(target = "team", ignore = true)
     @Mapping(target = "user", ignore = true)
     TeamMember createInputToEntity(TeamMemberCreateInput input);

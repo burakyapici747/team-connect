@@ -26,16 +26,16 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userService.getUserEntityByEmail(email);
 
         return new CustomUserDetails(
-                user.getId(),
-                user.getEmail(),
-                user.getPassword(),
-                getAuthorities(user)
+            user.getId(),
+            user.getEmail(),
+            user.getPassword(),
+            getAuthorities(user)
         );
     }
 
     private Set<SimpleGrantedAuthority> getAuthorities(User user) {
         return user.getRoles().stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRole()))
+                .map(role -> new SimpleGrantedAuthority(role.getRole().getRoleName()))
                 .collect(Collectors.toSet());
     }
 }

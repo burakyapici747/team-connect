@@ -5,6 +5,6 @@ import java.util.Set;
 public record TeamRolePrivateOutput(
     String id,
     String name,
-    String description,
-    Set<TeamPermission> permissions
+    String description
+//    Set<TeamPermission> permissions
 ) {}

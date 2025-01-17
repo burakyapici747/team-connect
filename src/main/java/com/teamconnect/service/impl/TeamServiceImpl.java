@@ -3,6 +3,7 @@ package com.teamconnect.service.impl;
 import com.teamconnect.api.input.team.TeamCreateInput;
 import com.teamconnect.api.input.team.TeamDeleteInput;
 import com.teamconnect.api.input.team.TeamUpdateInput;
+import com.teamconnect.common.enumarator.TeamMemberType;
 import com.teamconnect.configuration.RabbitMQConfig;
 import com.teamconnect.dto.TeamDto;
 import com.teamconnect.exception.TeamAlreadyExistsException;
@@ -11,32 +12,31 @@ import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.model.sql.Team;
 import com.teamconnect.model.sql.TeamMember;
 import com.teamconnect.model.sql.User;
-import com.teamconnect.repository.TeamRepository;
+import com.teamconnect.repository.postgresql.TeamRepository;
 import com.teamconnect.service.TeamService;
-import com.teamconnect.service.UserService;
 import java.util.List;
+
+import com.teamconnect.service.UserService;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.stereotype.Service;
-
-
 
 @Service
 public class TeamServiceImpl implements TeamService {
     private final TeamRepository teamRepository;
-    private final UserService userService;
     private final RabbitMQConfig rabbitMQConfig;
     private final RabbitAdmin rabbitAdmin;
+    private final UserService userService;
 
     public TeamServiceImpl(
         TeamRepository teamRepository,
-        UserService userService,
         RabbitMQConfig rabbitMQConfig,
-        RabbitAdmin rabbitAdmin
+        RabbitAdmin rabbitAdmin,
+        UserService userService
     ) {
         this.teamRepository = teamRepository;
-        this.userService = userService;
         this.rabbitMQConfig = rabbitMQConfig;
         this.rabbitAdmin = rabbitAdmin;
+        this.userService = userService;
     }
 
     @Override
@@ -45,7 +45,7 @@ public class TeamServiceImpl implements TeamService {
         User user = userService.getUserEntityByEmail(userEmail);
         Team team = TeamMapper.INSTANCE.teamCreateInputToTeam(teamCreateInput);
         TeamMember teamMember = createCreatorTeamMember(user, team);
-        team.getTeamMembers().add(teamMember);
+        team.getMembers().add(teamMember);
 
         Team savedTeam = teamRepository.save(team);
 
@@ -85,12 +85,10 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public List<TeamDto> getUserTeams(String userId) {
-        User user = userService.getUserEntityById(userId);
-        return user.getTeamMembers().stream()
-                .map(TeamMember::getTeam)
-                .map(TeamMapper.INSTANCE::teamToTeamDto)
-                .toList();
+    public List<TeamDto> getTeamsByUserId(String userId) {
+        List<Team> teamList = teamRepository.findUserTeams(userId);
+
+        return TeamMapper.INSTANCE.teamListToTeamDtoList(teamList);
     }
 
     @Override

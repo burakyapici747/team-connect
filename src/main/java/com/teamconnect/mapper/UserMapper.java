@@ -14,8 +14,8 @@ import com.teamconnect.api.output.user.UserDetailsPublicOutput;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.model.sql.User;
 
-@Mapper(componentModel = "spring")
 @Component
+@Mapper(componentModel = "spring")
 public interface UserMapper {
     UserMapper INSTANCE = Mappers.getMapper(UserMapper.class);
 
@@ -24,7 +24,6 @@ public interface UserMapper {
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "teamMembers", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
-    @Mapping(target = "meetings", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     User userRegisterInputToUser(UserRegisterInput input);
@@ -40,11 +39,9 @@ public interface UserMapper {
     @Mapping(target = "roles", ignore = true)
     @Mapping(target = "teamMembers", ignore = true)
     @Mapping(target = "userProfile", ignore = true)
-    @Mapping(target = "meetings", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-    @Mapping(target = "name", source = "name", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    @Mapping(target = "lastName", source = "lastName", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "username", source = "username", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     void updateUserFromUpdateUserInput(UserUpdateInput input, @MappingTarget User user);
 
     UserDetailsPublicOutput userDtoToUserDetailsPublicOutput(UserDto userDto);

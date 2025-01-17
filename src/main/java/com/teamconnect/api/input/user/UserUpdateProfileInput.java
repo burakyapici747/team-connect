@@ -15,13 +15,17 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 public record UserUpdateProfileInput(
-        @Size(max = BIO_MAX_LENGTH, message = BIO_LENGTH_MESSAGE) String bio,
+    @Size(max = BIO_MAX_LENGTH, message = BIO_LENGTH_MESSAGE)
+    String bio,
 
-        @Size(max = LANGUAGE_MAX_LENGTH, message = LANGUAGE_LENGTH_MESSAGE) String language,
+    @Size(max = LANGUAGE_MAX_LENGTH, message = LANGUAGE_LENGTH_MESSAGE)
+    String language,
 
-        UserStatus userStatus,
+    UserStatus userStatus,
 
-        @Pattern(regexp = UUID_PATTERN, message = PROFILE_IMAGE_UUID_MESSAGE) String profileImageFileId,
+    @Pattern(regexp = UUID_PATTERN, message = PROFILE_IMAGE_UUID_MESSAGE)
+    String profileImageFileId,
 
-        @Size(max = STATUS_DESCRIPTION_MAX_LENGTH, message = STATUS_DESCRIPTION_LENGTH_MESSAGE) String statusDescription) {
-}
+    @Size(max = STATUS_DESCRIPTION_MAX_LENGTH, message = STATUS_DESCRIPTION_LENGTH_MESSAGE)
+    String statusDescription
+) {}

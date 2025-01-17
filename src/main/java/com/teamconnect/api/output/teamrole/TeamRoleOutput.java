@@ -7,7 +7,7 @@ public record TeamRoleOutput(
     String id,
     String name,
     String description,
-    Set<TeamPermission> permissions,
+//    Set<TeamPermission> permissions,
     boolean isDefault,
     Instant createdAt,
     Instant updatedAt

@@ -7,7 +7,7 @@ import com.teamconnect.api.input.TeamMemberRoleAssignInput;
 import com.teamconnect.dto.TeamMemberDto;
 
 public interface TeamMemberService {
-    List<TeamMemberDto> getTeamMembersByTeamId(String teamId);
+//    List<TeamMemberDto> getTeamMembersByTeamId(String teamId);
 
     TeamMemberDto addMember(String teamId, TeamMemberCreateInput input);
 

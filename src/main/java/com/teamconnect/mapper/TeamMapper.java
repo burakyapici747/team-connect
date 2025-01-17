@@ -18,8 +18,8 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import org.springframework.stereotype.Component;
 
-@Mapper(componentModel = "spring", uses = { UserMapper.class })
 @Component
+@Mapper(componentModel = "spring", uses = { UserMapper.class })
 public interface TeamMapper {
     TeamMapper INSTANCE = Mappers.getMapper(TeamMapper.class);
 
@@ -39,6 +39,8 @@ public interface TeamMapper {
     @Mapping(target = "memberType", source = "memberType")
     @Mapping(target = "joinDate", source = "createdAt")
     TeamMemberPublicOutput teamMemberDtoToTeamMemberDetailsPublicOutput(TeamMemberDto teamMemberDto);
+
+    List<TeamDto> teamListToTeamDtoList(List<Team> teamList);
 
     List<TeamPublicOutput> teamDtoListToTeamPublicOutputList(List<TeamDto> teamDtoList);
 
