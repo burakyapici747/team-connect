@@ -58,9 +58,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     ) throws IOException, ServletException {
         if (SecurityConstants.Endpoints.Public.matches(request.getMethod(), request.getRequestURI())) {
             filterChain.doFilter(request, response);
-            return;
         }
-    } 
+    }
 
     private void processSecuredEndpoint(HttpServletRequest request) {
         String token = extractToken(request);

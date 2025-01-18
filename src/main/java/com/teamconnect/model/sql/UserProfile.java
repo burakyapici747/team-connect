@@ -1,11 +1,8 @@
 package com.teamconnect.model.sql;
 
 import jakarta.persistence.*;
-import org.hibernate.annotations.Type;
 
 import java.time.Instant;
-import java.util.HashMap;
-import java.util.Map;
 
 @Entity
 @Table(name = "user_profiles")
@@ -13,6 +10,9 @@ public class UserProfile extends BaseModel {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
+
+    @Column(name = "avatar_file_id")
+    private String avatarFileId;
 
     @Column(name = "full_name")
     private String fullName;
@@ -62,6 +62,14 @@ public class UserProfile extends BaseModel {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getAvatarFileId() {
+        return avatarFileId;
+    }
+
+    public void setAvatarFileId(String avatarFileId) {
+        this.avatarFileId = avatarFileId;
     }
 
     public String getFullName() {

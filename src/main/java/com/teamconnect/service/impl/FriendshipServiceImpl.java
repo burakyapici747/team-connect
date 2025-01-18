@@ -9,7 +9,6 @@ import com.teamconnect.repository.postgresql.FriendshipRepository;
 import com.teamconnect.service.FriendshipService;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class FriendshipServiceImpl implements FriendshipService {
@@ -148,12 +147,5 @@ public class FriendshipServiceImpl implements FriendshipService {
             FriendshipStatus.REQ_UID1 : FriendshipStatus.REQ_UID2);
 
         return friendship;
-    }
-
-    private void deneme(){
-        UUID uuid1 = UUID.randomUUID();
-        UUID uuid2 = UUID.randomUUID();
-
-        System.out.println(uuid1.compareTo(uuid2));
     }
 }

@@ -10,7 +10,9 @@ import com.teamconnect.dto.TeamDto;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.model.sql.User;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface UserService {
@@ -39,4 +41,6 @@ public interface UserService {
     User getUserEntityById(String id);
 
     User getUserEntityByEmail(String email);
+
+    UserProfileDto uploadUserProfileAvatar(String currentUserId, MultipartFile file) throws IOException;
 }
