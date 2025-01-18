@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/v1/api/users/{userId}/friendships")
+@RequestMapping("/v1/api/users/me/relationships")
 public class FriendshipController {
     private final FriendshipService friendshipService;
     private final FriendshipMapper friendshipMapper;
@@ -62,7 +62,7 @@ public class FriendshipController {
         );
     }
 
-    @PostMapping
+    @PostMapping("/{friendId}")
     public ResponseEntity<ResponseWrapper<FriendshipOutput>> sendFriendRequest(
         @AuthenticationPrincipal CustomUserDetails userDetails,
         @PathVariable String friendId

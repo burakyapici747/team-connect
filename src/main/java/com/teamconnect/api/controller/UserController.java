@@ -5,18 +5,11 @@ import com.teamconnect.api.output.channel.ChannelPublicOutput;
 import com.teamconnect.mapper.ChannelMapper;
 import com.teamconnect.mapper.TeamMapper;
 import com.teamconnect.security.CustomUserDetails;
-import com.teamconnect.service.TeamService;
+import com.teamconnect.service.UserProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.teamconnect.api.input.user.UserDeleteInput;
 import com.teamconnect.api.input.user.UserRegisterInput;
@@ -34,16 +27,20 @@ import com.teamconnect.mapper.UserProfileMapper;
 import com.teamconnect.service.UserService;
 
 import jakarta.validation.Valid;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
 @RequestMapping("/v1/api/users")
 public class UserController {
     private final UserService userService;
+    private final UserProfileService userProfileService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, UserProfileService userProfileService) {
         this.userService = userService;
+        this.userProfileService = userProfileService;
     }
 
     @GetMapping("/me/teams")
@@ -151,13 +148,25 @@ public class UserController {
         );
     }
 
-    @GetMapping("/@me/profile")
+    @GetMapping("/me/profile")
     public ResponseEntity<ResponseWrapper<UserProfilePrivateOutput>> getCurrentUserProfile(
         @AuthenticationPrincipal UserDetails userDetails
     ) {
         return ResponseWrapper.ok(
             UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePrivateOutput(
                 userService.getUserProfileByUserEmail(userDetails.getUsername()))
+        );
+    }
+
+    @PostMapping("/me/profile/avatar")
+    public ResponseEntity<ResponseWrapper<UserProfilePrivateOutput>> uploadProfileAvatar(
+        @AuthenticationPrincipal CustomUserDetails userDetails,
+        @RequestParam("avatar")MultipartFile multipartFile
+    ) throws IOException {
+        UserProfileDto profileDto = userService.uploadUserProfileAvatar(userDetails.getId(), multipartFile);
+        return ResponseWrapper.ok(
+            UserProfileMapper.INSTANCE.userProfileDtoToUserProfilePrivateOutput(profileDto),
+            "Profile avatar uploaded successfully"
         );
     }
 }
