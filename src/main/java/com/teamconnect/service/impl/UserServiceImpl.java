@@ -1,13 +1,17 @@
 package com.teamconnect.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import com.teamconnect.api.input.user.*;
+import com.teamconnect.common.enumarator.FilePurposeType;
 import com.teamconnect.dto.ChannelDto;
 import com.teamconnect.dto.TeamDto;
+import com.teamconnect.model.nosql.File;
 import com.teamconnect.model.sql.UserRole;
 import com.teamconnect.service.ChannelService;
+import com.teamconnect.service.FileService;
 import com.teamconnect.service.TeamService;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,6 +29,7 @@ import com.teamconnect.model.sql.UserProfile;
 import com.teamconnect.repository.postgresql.UserProfileRepository;
 import com.teamconnect.repository.postgresql.UserRepository;
 import com.teamconnect.service.UserService;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -33,19 +38,22 @@ public class UserServiceImpl implements UserService {
     private final UserProfileRepository userProfileRepository;
     private final PasswordEncoder passwordEncoder;
     private final ChannelService channelService;
+    private final FileService fileService;
 
     public UserServiceImpl(
         UserRepository userRepository,
         UserProfileRepository userProfileRepository,
         PasswordEncoder passwordEncoder,
         @Lazy TeamService teamService,
-        ChannelService channelService
+        ChannelService channelService,
+        FileService fileService
     ) {
         this.userRepository = userRepository;
         this.userProfileRepository = userProfileRepository;
         this.passwordEncoder = passwordEncoder;
         this.teamService = teamService;
         this.channelService = channelService;
+        this.fileService = fileService;
     }
 
     @Override
@@ -119,6 +127,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserEntityByEmail(String email) {
         return findUserByEmail(email);
+    }
+
+    @Override
+    public UserProfileDto uploadUserProfileAvatar(String currentUserId, MultipartFile file) throws IOException {
+        UserProfile userProfile = findUserProfileByUserId(currentUserId);
+        File avatar = fileService.storeFile(file, FilePurposeType.AVATAR, currentUserId);
+        userProfile.setAvatarFileId(avatar.getId());
+        userProfileRepository.save(userProfile);
+        return UserProfileMapper.INSTANCE.userProfileToUserProfileDto(userProfile);
     }
 
     @Override

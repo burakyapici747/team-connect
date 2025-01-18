@@ -11,23 +11,23 @@ import java.util.List;
 @Repository
 public interface FriendshipRepository extends JpaRepository<Friendship, String> {
     @Query("SELECT f FROM Friendship f" +
-        " WHERE (f.user1 = :userId AND f.status = 'FRIEND') OR (f.user2 = :userId AND f.status = 'FRIEND')")
+        " WHERE (f.user1.id = :userId AND f.status = 'FRIEND') OR (f.user2.id = :userId AND f.status = 'FRIEND')")
     List<Friendship> findAllFriendshipsByUserId(@Param("userId") String userId);
 
     @Query(
         "SELECT f FROM Friendship f " +
         "WHERE " +
-            "(f.user1 = :userId AND f.status = 'REQ_UID1') " +
+            "(f.user1.id = :userId AND f.status = 'REQ_UID1') " +
         "OR" +
-            " (f.user2 = :userId AND f.status = 'REQ_UID2')"
+            " (f.user2.id = :userId AND f.status = 'REQ_UID2')"
     )
     List<Friendship> findOutgoingFriendRequestsByUserId(@Param("userId") String userId);
 
     @Query("SELECT  f FROM Friendship f " +
     "WHERE " +
-        "(f.user1 = :userId AND f.status = 'REQ_UID2') " +
+        "(f.user1.id = :userId AND f.status = 'REQ_UID2') " +
     "OR " +
-        "(f.user2 = :userId AND f.status = 'REQ_UID1')")
+        "(f.user2.id = :userId AND f.status = 'REQ_UID1')")
     List<Friendship> findIncomingFriendRequestsByUserId(@Param("userId") String userId);
 
     @Query("SELECT f FROM Friendship f " +
