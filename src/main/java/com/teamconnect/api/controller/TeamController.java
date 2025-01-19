@@ -2,7 +2,6 @@ package com.teamconnect.api.controller;
 
 import com.teamconnect.api.input.team.TeamCreateInput;
 import com.teamconnect.api.input.team.TeamDeleteInput;
-import com.teamconnect.api.input.team.TeamPublicOutput;
 import com.teamconnect.api.input.team.TeamUpdateInput;
 import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.api.output.team.TeamCreateOutput;
@@ -10,20 +9,15 @@ import com.teamconnect.api.output.team.TeamPublicDetailsOutput;
 import com.teamconnect.api.output.teammember.TeamPrivateOutput;
 import com.teamconnect.common.annotation.RequireTeamPermission;
 import com.teamconnect.mapper.TeamMapper;
-import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.TeamService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/v1/api/teams")
@@ -43,10 +37,13 @@ public class TeamController {
 	@PostMapping
 	public ResponseEntity<ResponseWrapper<TeamCreateOutput>> createTeam(
         @AuthenticationPrincipal UserDetails userDetails,
-        @Valid @RequestBody TeamCreateInput input
-    ) {
+        @RequestPart("input") @Valid TeamCreateInput input,
+        @RequestPart("file") MultipartFile file
+    ) throws IOException {
 		return ResponseWrapper.created(
-            TeamMapper.INSTANCE.teamDtoToTeamCreateOutput(teamService.createTeam(userDetails.getUsername(), input))
+            TeamMapper.INSTANCE.teamDtoToTeamCreateOutput(
+                teamService.createTeam(userDetails.getUsername(), input, file)
+            )
         );
 	}
 
@@ -57,7 +54,8 @@ public class TeamController {
 		@Valid @RequestBody TeamUpdateInput input
 	) {
 		return ResponseWrapper.ok(
-            TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input)));
+            TeamMapper.INSTANCE.teamDtoToTeamPrivateDetailsOutput(teamService.updateTeam(id, input))
+        );
 	}
 
 	@DeleteMapping("/{id}")

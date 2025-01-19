@@ -7,6 +7,7 @@ public record UserProfileDto(
     String bio,
     String language,
     String imageFileId,
+    String imageFileUrl,
     UserStatus userStatus,
     String statusDescription
 ) {}

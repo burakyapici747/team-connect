@@ -14,6 +14,7 @@ public class File {
     private String storedFileName;
     private String originalName;
     private String contentType;
+    private String fileUrl;
     private long size;
     private Instant uploadDate;
     @Field("filePurpose")
@@ -51,6 +52,14 @@ public class File {
 
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    public String getFileUrl() {
+        return fileUrl;
+    }
+
+    public void setFileUrl(String fileUrl) {
+        this.fileUrl = fileUrl;
     }
 
     public long getSize() {

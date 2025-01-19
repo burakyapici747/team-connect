@@ -6,5 +6,6 @@ public record TeamCreateOutput(
     String id,
     String name,
     String description,
-    Instant createdAt
+    Instant createdAt,
+    String iconUrl
 ) {}

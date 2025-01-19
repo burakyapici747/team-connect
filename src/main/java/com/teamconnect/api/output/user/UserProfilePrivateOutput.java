@@ -6,7 +6,8 @@ public record UserProfilePrivateOutput(
     String id,
     String bio,
     String language,
-    String profileImageFileId,
+    String imageFileId,
+    String imageFileUrl,
     UserStatus userStatus,
     String statusDescription
 ) {}

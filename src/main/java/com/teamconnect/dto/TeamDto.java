@@ -6,6 +6,7 @@ public record TeamDto(
     String id,
     String name,
     String description,
+    String icon,
     Instant createdAt,
     Instant updatedAt
 ){}

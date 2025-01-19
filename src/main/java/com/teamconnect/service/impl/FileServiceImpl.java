@@ -71,6 +71,7 @@ public class FileServiceImpl implements FileService {
         fileEntity.setFilePurpose(filePurposeType);
         fileEntity.setOwnerId(ownerId);
         fileEntity.setDeleted(false);
+        fileEntity.setFileUrl("http://localhost:8080/api/files/" + fileEntity.getId() + fileExtension);
 
         return fileRepository.save(fileEntity);
     }
