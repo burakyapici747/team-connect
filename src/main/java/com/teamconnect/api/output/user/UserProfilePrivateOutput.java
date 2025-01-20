@@ -4,10 +4,13 @@ import com.teamconnect.common.enumarator.UserStatus;
 
 public record UserProfilePrivateOutput(
     String id,
+    String avatarFileId,
+    String avatarFileUrl,
+    String fullName,
     String bio,
+    String timezone,
     String language,
-    String imageFileId,
-    String imageFileUrl,
-    UserStatus userStatus,
-    String statusDescription
+    String birthday,
+    String gender,
+    String themePreference
 ) {}
