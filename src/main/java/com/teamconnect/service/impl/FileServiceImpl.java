@@ -54,7 +54,8 @@ public class FileServiceImpl implements FileService {
 
         String fileName = file.getOriginalFilename();
         String fileExtension = getFileExtension(fileName);
-        String newFileName = UUID.randomUUID() + fileExtension;
+        String fileId = UUID.randomUUID().toString();
+        String newFileName = fileId + fileExtension;
 
         Path targetLocation = uploadPath.resolve(newFileName).normalize().toAbsolutePath();
 
@@ -63,7 +64,7 @@ public class FileServiceImpl implements FileService {
         Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
 
         File fileEntity = new File();
-        fileEntity.setId(UUID.randomUUID().toString());
+        fileEntity.setId(fileId);
         fileEntity.setOriginalName(fileName);
         fileEntity.setStoredFileName(newFileName);
         fileEntity.setContentType(file.getContentType());
@@ -71,7 +72,7 @@ public class FileServiceImpl implements FileService {
         fileEntity.setFilePurpose(filePurposeType);
         fileEntity.setOwnerId(ownerId);
         fileEntity.setDeleted(false);
-        fileEntity.setFileUrl("http://localhost:8080/api/files/" + fileEntity.getId() + fileExtension);
+        fileEntity.setFileUrl("http://localhost:8080/uploads/" + fileEntity.getId() + fileExtension);
 
         return fileRepository.save(fileEntity);
     }

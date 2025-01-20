@@ -145,12 +145,12 @@ public class UserServiceImpl implements UserService {
 
     private User findUserById(String id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     private User findUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+            .orElseThrow(() -> new UserNotFoundException("User not found"));
     }
 
     public UserProfile findUserProfileByUserEmail(String email) {
