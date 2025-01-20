@@ -7,27 +7,21 @@ import java.time.Instant;
 @Entity
 @Table(name = "user_profiles")
 public class UserProfile extends BaseModel {
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
     @Column(name = "avatar_file_id")
     private String avatarFileId;
 
+    @Column(name = "avatar_file_url")
+    private String avatarFileUrl;
+
     @Column(name = "full_name")
     private String fullName;
 
     @Column(name = "bio")
     private String bio;
-
-    @Column(name = "title")
-    private String title;
-
-    @Column(name = "phone")
-    private String phone;
-
-    @Column(name = "location")
-    private String location;
 
     @Column(name = "timezone")
     private String timezone;
@@ -40,18 +34,6 @@ public class UserProfile extends BaseModel {
 
     @Column(name = "gender")
     private String gender;
-
-    @Column(name = "company")
-    private String company;
-
-    @Column(name = "department")
-    private String department;
-
-    @Column(name = "position")
-    private String position;
-
-    @Column(name = "website")
-    private String website;
 
     @Column(name = "theme_preference")
     private String themePreference = "light";
@@ -72,6 +54,14 @@ public class UserProfile extends BaseModel {
         this.avatarFileId = avatarFileId;
     }
 
+    public String getAvatarFileUrl() {
+        return avatarFileUrl;
+    }
+
+    public void setAvatarFileUrl(String avatarFileUrl) {
+        this.avatarFileUrl = avatarFileUrl;
+    }
+
     public String getFullName() {
         return fullName;
     }
@@ -86,30 +76,6 @@ public class UserProfile extends BaseModel {
 
     public void setBio(String bio) {
         this.bio = bio;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
-
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getTimezone() {
@@ -142,38 +108,6 @@ public class UserProfile extends BaseModel {
 
     public void setGender(String gender) {
         this.gender = gender;
-    }
-
-    public String getCompany() {
-        return company;
-    }
-
-    public void setCompany(String company) {
-        this.company = company;
-    }
-
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public String getPosition() {
-        return position;
-    }
-
-    public void setPosition(String position) {
-        this.position = position;
-    }
-
-    public String getWebsite() {
-        return website;
-    }
-
-    public void setWebsite(String website) {
-        this.website = website;
     }
 
     public String getThemePreference() {
