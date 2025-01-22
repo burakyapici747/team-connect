@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 public interface UserService {
     List<TeamDto> getUserTeamsByUserId(String userId);
@@ -43,4 +44,6 @@ public interface UserService {
     User getUserEntityByEmail(String email);
 
     UserProfileDto uploadUserProfileAvatar(String currentUserId, MultipartFile file) throws IOException;
+
+    List<UserDto> getAllByIdIn(Set<String> userIds);
 }
