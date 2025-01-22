@@ -14,6 +14,8 @@ import com.teamconnect.api.output.user.UserDetailsPublicOutput;
 import com.teamconnect.dto.UserDto;
 import com.teamconnect.model.sql.User;
 
+import java.util.List;
+
 @Component
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -47,4 +49,6 @@ public interface UserMapper {
     UserDetailsPublicOutput userDtoToUserDetailsPublicOutput(UserDto userDto);
 
     UserDetailsPrivateOutput userDtoToUserDetailsPrivateOutput(UserDto userDto);
+
+    List<UserDto> userListToUserDtoList(List<User> userList);
 }

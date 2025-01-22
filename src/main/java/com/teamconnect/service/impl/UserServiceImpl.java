@@ -139,6 +139,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<UserDto> getAllByIdIn(Set<String> userIds) {
+        return UserMapper.INSTANCE.userListToUserDtoList(userRepository.findAllByIdIn(userIds));
+    }
+
+    @Override
     public User getUserEntityById(String id) {
         return findUserById(id);
     }

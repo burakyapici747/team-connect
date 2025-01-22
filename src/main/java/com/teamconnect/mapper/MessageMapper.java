@@ -24,7 +24,5 @@ public interface MessageMapper {
 
     MessageOutput messageDtoToMessageOutput(MessageDto messageDto);
 
-    List<MessageDto> messageListToMessageDtoList(List<Message> messages);
-
-    List<MessageOutput> messageDtoListToMessageOutputList(List<MessageDto> messageDtos);
+    List<MessageOutput> messageDtoListToMessageOutputList(List<MessageDto> messageDtoList);
 }
