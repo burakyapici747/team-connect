@@ -10,10 +10,9 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMQConfig {
-    
-    private static final String PRIVATE_CHAT_PREFIX = "private-chat";
-    private static final String TEAM_CHAT_PREFIX = "team-chat";
-    
+
+    private static final String DM_CHANNEL_PREFIX = "dm.queue.";
+
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         return new RabbitAdmin(connectionFactory);
@@ -24,35 +23,15 @@ public class RabbitMQConfig {
         return new RabbitTemplate(connectionFactory);
     }
 
-    public Queue createPrivateChatQueue(Long user1Id, Long user2Id) {
-        if (user1Id == null || user2Id == null) {
-            throw new IllegalArgumentException("User IDs cannot be null");
-        }
-        if (user1Id.equals(user2Id)) {
-            throw new IllegalArgumentException("Cannot create chat queue for same user");
-        }
-        
-        String queueName = String.format("%s.%d.%d", 
-            PRIVATE_CHAT_PREFIX,
-            Math.min(user1Id, user2Id), 
-            Math.max(user1Id, user2Id)
+    public Queue createDMChannelQueue(String channelId) {
+        String queueName = String.format("%s%s",
+            DM_CHANNEL_PREFIX,
+            channelId
         );
-        
-        return QueueBuilder.durable(queueName)
-            .withArgument("x-message-ttl", 7 * 24 * 60 * 60 * 1000) // 7 days TTL
-            .withArgument("x-expires", 30 * 24 * 60 * 60 * 1000)    // delete after 30 days of inactivity
-            .build();
-    }
 
-    public Queue createTeamChatQueue(Long teamId) {
-        if (teamId == null) {
-            throw new IllegalArgumentException("Team ID cannot be null");
-        }
-        
-        String queueName = String.format("%s.%d", TEAM_CHAT_PREFIX, teamId);
-        
         return QueueBuilder.durable(queueName)
-            .withArgument("x-message-ttl", 30 * 24 * 60 * 60 * 1000) // 30 days TTL
+            .withArgument("x-message-ttl", 7 * 24 * 60 * 60 * 1000)
+            .withArgument("x-expires", 30 * 24 * 60 * 60 * 1000)
             .build();
     }
 
