@@ -64,7 +64,7 @@ public class TeamServiceImpl implements TeamService {
 
         // Create team chat queue
         rabbitMQConfig.declareQueue(
-            rabbitMQConfig.createTeamChatQueue(Long.parseLong(savedTeam.getId())),
+            rabbitMQConfig.createDMChannelQueue("dsadsa"),
             rabbitAdmin
         );
 

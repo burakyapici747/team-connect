@@ -1,10 +1,14 @@
 package com.teamconnect.api.controller;
 
+import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.MessageOutput;
+import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.mapper.MessageMapper;
 import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.MessageService;
 import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +22,31 @@ public class MessageController {
     }
 
     @GetMapping
-    public List<MessageOutput> getMessagesByChannelId(
+    public ResponseEntity<ResponseWrapper<List<MessageOutput>>> getMessagesByChannelId(
         @PathVariable(value = "channelId") String channelId,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ){
-        return MessageMapper.INSTANCE.messageDtoListToMessageOutputList(
-            messageService.getMessagesByChannelId(channelId)
+        return ResponseWrapper.ok(
+            MessageMapper.INSTANCE.messageDtoListToMessageOutputList(
+                messageService.getMessagesByChannelId(channelId)
+            )
+        );
+    }
+
+    @PostMapping
+    public ResponseEntity<ResponseWrapper<MessageOutput>> sendMessage(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @PathVariable(value = "channelId") String channelId,
+        @RequestBody MessageCreateInput messageCreateInput
+    ){
+        return ResponseWrapper.ok(
+            MessageMapper.INSTANCE.messageDtoToMessageOutput(
+                messageService.sendMessage(
+                    channelId,
+                    customUserDetails.getId(),
+                    messageCreateInput
+                )
+            )
         );
     }
 
