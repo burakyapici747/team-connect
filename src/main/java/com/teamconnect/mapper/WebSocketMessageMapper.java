@@ -14,17 +14,4 @@ public interface WebSocketMessageMapper {
     @Mapping(target = "authorId", source = "authorId")
     @Mapping(target = "timestamp", expression = "java(java.time.Instant.now())")
     WebSocketMessage enrichWebSocketMessage(WebSocketMessage message, String authorId);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "timestamp", ignore = true)
-    @Mapping(target = "content", source = "content")
-    @Mapping(target = "channelId", source = "channelId")
-    @Mapping(target = "authorId", ignore = true)
-    @Mapping(target = "metadata", ignore = true)
-    WebSocketMessage messageCreateInputToWebSocketMessage(MessageCreateInput input);
-
-    @Mapping(target = "content", source = "content")
-    @Mapping(target = "channelId", source = "channelId")
-    @Mapping(target = "parentMessageId", ignore = true)
-    MessageCreateInput webSocketMessageToMessageCreateInput(WebSocketMessage message);
 }
