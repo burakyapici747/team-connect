@@ -48,7 +48,7 @@ public class SecurityConfig {
     ) throws Exception {
         return http
             //.cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .securityMatcher(new AntPathRequestMatcher("/v1/api/**"))
+            .securityMatcher(new AntPathRequestMatcher("http://192.168.3.50/v1/api/auth/v1/api/**"))
             .cors(Customizer.withDefaults())
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

@@ -10,9 +10,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 public class WebSocketSecurityConfig {
     @Bean
-    public SecurityFilterChain webSocketFilterChain(
-        HttpSecurity http
-    ) throws Exception {
+    public SecurityFilterChain webSocketFilterChain(HttpSecurity http) throws Exception {
         return http
             .securityMatcher(AntPathRequestMatcher.antMatcher("/ws/**"))
             .sessionManagement(
