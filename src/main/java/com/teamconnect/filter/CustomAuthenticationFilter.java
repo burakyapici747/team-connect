@@ -76,7 +76,7 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
         SecurityContextHolder.getContext().setAuthentication(authResult);
         CustomUserDetails userDetails = (CustomUserDetails) authResult.getPrincipal();
         String accessToken = jwtService.generateToken(userDetails);
-        
+
         sendSuccessAuthenticationCookie(response, accessToken);
     }
 
@@ -86,10 +86,10 @@ public class CustomAuthenticationFilter extends AbstractAuthenticationProcessing
     ) {
         jakarta.servlet.http.Cookie cookie = new jakarta.servlet.http.Cookie("jwt", accessToken);
         cookie.setHttpOnly(true);
-        cookie.setSecure(true);
+        cookie.setSecure(false);
         cookie.setPath("/");
         cookie.setMaxAge(24 * 60 * 60);
-        
+
         response.addCookie(cookie);
     }
 

@@ -1,8 +1,10 @@
 package com.teamconnect.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.dto.MessageDto;
+import com.teamconnect.dto.WebSocketMessageDto;
 import com.teamconnect.model.nosql.Message;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.couchbase.MessageRepository;
@@ -82,7 +84,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) {
+    public void sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws JsonProcessingException {
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
         message.setAuthorId(authorId);
@@ -98,27 +100,38 @@ public class MessageServiceImpl implements MessageService {
 
         messageRepository.save(message);
 
-        rabbitTemplate.convertAndSend("dm.exchange.dccd525d-d909-4cec-99f4-28cb459eb9a5", channelId, message.getId());
 
         User author = userRepository.findById(authorId).orElseThrow();
 
-        return new MessageDto(
-            message.getId(),
-            message.getChannelId(),
-            message.getContent(),
-            message.getTimestamp(),
-            message.getEditedTimestamp(),
-            message.getPinned(),
-            message.getType(),
-            message.getAttachments(),
-            message.getMentions(),
-            message.getReactions(),
-            new AuthorOutput(
-                author.getId(),
-                author.getUsername(),
-                author.getUserProfile().getAvatarFileUrl(),
-                author.getUserProfile().getAvatarFileId()
-            )
+        WebSocketMessageDto webSocketMessageDto = new WebSocketMessageDto();
+        webSocketMessageDto.setId(message.getId());
+        webSocketMessageDto.setChannelId(message.getChannelId());
+        webSocketMessageDto.setContent(message.getContent());
+        webSocketMessageDto.setTimestamp(message.getTimestamp());
+        webSocketMessageDto.setEditedTimestamp(message.getEditedTimestamp());
+        webSocketMessageDto.setPinned(message.getPinned());
+        webSocketMessageDto.setType(message.getType());
+        webSocketMessageDto.setAttachments(message.getAttachments());
+        webSocketMessageDto.setMentions(message.getMentions());
+        webSocketMessageDto.setReactions(message.getReactions());
+
+        AuthorOutput authorOutput = new AuthorOutput(
+            author.getId(),
+            author.getUsername(),
+            author.getUserProfile().getAvatarFileUrl(),
+            author.getUserProfile().getAvatarFileId()
+        );
+
+        webSocketMessageDto.setAuthor(authorOutput);
+
+        rabbitTemplate.convertAndSend(
+            "dm.exchange.dccd525d-d909-4cec-99f4-28cb459eb9a5",
+            channelId,
+            webSocketMessageDto,
+            m -> {
+                m.getMessageProperties().setHeader("channelId", channelId);
+                return m;
+            }
         );
     }
 }

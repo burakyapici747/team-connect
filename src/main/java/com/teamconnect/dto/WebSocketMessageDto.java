@@ -1,25 +1,40 @@
-package com.teamconnect.model.nosql;
+package com.teamconnect.dto;
 
-import org.springframework.data.annotation.TypeAlias;
-import org.springframework.data.couchbase.core.mapping.Document;
+import com.teamconnect.api.output.user.AuthorOutput;
+import com.teamconnect.model.nosql.Attachment;
+import com.teamconnect.model.nosql.Mention;
 
 import java.io.Serializable;
 import java.time.Instant;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-@Document
-@TypeAlias("MESSAGE")
-public class Message extends BaseCouchbaseModel{
+public class WebSocketMessageDto implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    private String id;
     private String channelId;
-    private String authorId;
     private String content;
     private Instant timestamp;
     private Instant editedTimestamp;
     private Boolean pinned;
     private Integer type;
-    private Set<Attachment> attachments = new HashSet<>();
-    private Set<Mention> mentions = new HashSet<>();
-    private List<Map<String, Object>> reactions = new ArrayList<>();
+    private Set<Attachment> attachments;
+    private Set<Mention> mentions;
+    private List<Map<String, Object>> reactions;
+    private AuthorOutput author;
+
+    public WebSocketMessageDto() {
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getChannelId() {
         return channelId;
@@ -27,14 +42,6 @@ public class Message extends BaseCouchbaseModel{
 
     public void setChannelId(String channelId) {
         this.channelId = channelId;
-    }
-
-    public String getAuthorId() {
-        return authorId;
-    }
-
-    public void setAuthorId(String authorId) {
-        this.authorId = authorId;
     }
 
     public String getContent() {
@@ -99,5 +106,13 @@ public class Message extends BaseCouchbaseModel{
 
     public void setReactions(List<Map<String, Object>> reactions) {
         this.reactions = reactions;
+    }
+
+    public AuthorOutput getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(AuthorOutput author) {
+        this.author = author;
     }
 }
