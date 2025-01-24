@@ -41,21 +41,19 @@ public class CorsConfig {
 
         return new CorsFilter(urlBasedCorsConfigurationSource);
     }
-   
-   
-   */ 
+
+
+   */
 
    @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOrigin("http://localhost:3000"); // Tek origin
-        // veya
-        // corsConfiguration.addAllowedOriginPattern("*"); // Tüm originler
+        corsConfiguration.addAllowedOriginPattern("*"); // Tüm originler
 
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
-        
+
         // OPTIONS preflight istekleri için
         corsConfiguration.addExposedHeader("Authorization");
         corsConfiguration.setMaxAge(3600L); // preflight cache süresi
@@ -64,5 +62,5 @@ public class CorsConfig {
         source.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsFilter(source);
     }
-   
-} 
+
+}

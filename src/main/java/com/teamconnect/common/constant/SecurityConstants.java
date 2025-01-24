@@ -17,11 +17,11 @@ public final class SecurityConstants {
 
             public static final Map<String, List<String>> ALLOWED_ENDPOINTS = Map.of(
                     "POST", List.of(
-                            "/v1/api/auth/login",
-                            "/v1/api/auth/refresh-token"),
+                            "http://192.168.3.50/v1/api/auth/login",
+                            "http://192.168.3.50/v1/api/auth/refresh-token"),
                     "GET", List.of(
-                            "/v1/api/users/verify-email",
-                            "/v1/api/auth/password-reset"),
+                            "http://192.168.3.50/v1/api/users/verify-email",
+                            "http://192.168.3.50/v1/api/auth/password-reset"),
                     "OPTIONS", List.of("/**"));
 
             public static boolean matches(String method, String uri) {
