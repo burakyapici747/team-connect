@@ -3,6 +3,7 @@ package com.teamconnect.model.nosql;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.couchbase.core.mapping.Document;
 
+import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
 
