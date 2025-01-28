@@ -9,6 +9,6 @@ import java.util.List;
 
 @Service
 public interface MessageService {
-    List<MessageDto> getMessagesByChannelId(String channelId);
+    List<MessageDto> getMessages(String channelId, String beforeMessageId, int limit);
     void sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws JsonProcessingException;
 }
