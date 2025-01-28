@@ -49,14 +49,13 @@ public class CorsConfig {
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowCredentials(true);
-        corsConfiguration.addAllowedOriginPattern("*"); // Tüm originler
+        corsConfiguration.addAllowedOriginPattern("*");
 
         corsConfiguration.addAllowedHeader("*");
         corsConfiguration.addAllowedMethod("*");
 
-        // OPTIONS preflight istekleri için
         corsConfiguration.addExposedHeader("Authorization");
-        corsConfiguration.setMaxAge(3600L); // preflight cache süresi
+        corsConfiguration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", corsConfiguration);

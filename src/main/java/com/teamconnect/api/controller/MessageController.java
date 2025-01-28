@@ -23,13 +23,15 @@ public class MessageController {
     }
 
     @GetMapping
-    public ResponseEntity<ResponseWrapper<List<MessageOutput>>> getMessagesByChannelId(
+    public ResponseEntity<ResponseWrapper<List<MessageOutput>>> getMessages(
         @PathVariable(value = "channelId") String channelId,
+        @RequestParam(required = false) String before,
+        @RequestParam(defaultValue = "50") int limit,
         @AuthenticationPrincipal CustomUserDetails userDetails
     ){
         return ResponseWrapper.ok(
             MessageMapper.INSTANCE.messageDtoListToMessageOutputList(
-                messageService.getMessagesByChannelId(channelId)
+                messageService.getMessages(channelId, before, limit)
             )
         );
     }

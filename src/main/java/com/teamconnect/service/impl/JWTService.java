@@ -48,9 +48,10 @@ public class JWTService {
     }
 
     private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
-            long expiration) {
+        Map<String, Object> extraClaims,
+        UserDetails userDetails,
+        long expiration
+    ) {
         return Jwts
                 .builder()
                 .claims(extraClaims)
@@ -77,7 +78,8 @@ public class JWTService {
 
     public boolean isTokenValid(String token) {
         try {
-            return !isTokenExpired(token);
+            extractAllClaims(token); // İmza doğrulaması yapar
+            return !isTokenExpired(token); // Süre kontrolü yapar
         } catch (Exception e) {
             log.error("Error validating token: ", e);
             return false;
@@ -85,7 +87,8 @@ public class JWTService {
     }
 
     private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(Date.from(Instant.now()));
+        Date expiration = extractExpiration(token);
+        return expiration != null && expiration.before(Date.from(Instant.now()));
     }
 
     private Date extractExpiration(String token) {

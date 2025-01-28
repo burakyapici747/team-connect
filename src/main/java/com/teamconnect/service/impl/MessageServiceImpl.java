@@ -14,10 +14,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -38,8 +35,14 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageDto> getMessagesByChannelId(String channelId) {
-        List<Message> messageList = messageRepository.findMessageByChannelId(channelId);
+    public List<MessageDto> getMessages(String channelId, String beforeMessageId, int limit) {
+        List<Message> messageList;
+
+        if (Objects.isNull(beforeMessageId)) {
+            messageList = messageRepository.findInitialMessages(channelId, limit);
+        } else {
+            messageList = messageRepository.findMessagesBeforeId(channelId, beforeMessageId, limit);
+        }
 
         Set<String> userIds = messageList.stream()
             .map(Message::getAuthorId)

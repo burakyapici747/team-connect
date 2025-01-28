@@ -48,7 +48,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
             SecurityContextHolder.clearContext();
         }
 
-        filterChain.doFilter(request, response);
+            filterChain.doFilter(request, response);
     }
 
     private void skipAuthorizationIfPublic(
