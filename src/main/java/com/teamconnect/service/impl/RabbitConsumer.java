@@ -21,8 +21,8 @@ public class RabbitConsumer {
     @RabbitListener(
         bindings = @QueueBinding(
             exchange = @Exchange(value = "dm.exchange.dccd525d-d909-4cec-99f4-28cb459eb9a5"),
-            value = @Queue("dm.queue.dccd525d-d909-4cec-99f4-28cb459eb9a5"),
-            key = "dccd525d-d909-4cec-99f4-28cb459eb9a5"
+            value = @Queue("dm.queue.87393e0e-2305-4a11-8b30-e4d11ba4ba68"),
+            key = "87393e0e-2305-4a11-8b30-e4d11ba4ba68"
         )
     )
     public void consumeMessage(
