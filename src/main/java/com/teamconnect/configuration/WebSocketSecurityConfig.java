@@ -19,7 +19,6 @@ public class WebSocketSecurityConfig {
             )
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/ws/**", "/stomp/**").permitAll()
-                .anyRequest().authenticated()
             )
             .build();
     }
