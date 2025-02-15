@@ -10,7 +10,6 @@ import jakarta.validation.Validator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -47,9 +46,8 @@ public class SecurityConfig {
         CorsConfigurationSource corsConfigurationSource
     ) throws Exception {
         return http
-            //.cors(cors -> cors.configurationSource(corsConfigurationSource))
-            .securityMatcher(new AntPathRequestMatcher("http://192.168.3.50/v1/api/auth/v1/api/**"))
-            .cors(Customizer.withDefaults())
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .securityMatcher(new AntPathRequestMatcher("/v1/api/**"))
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authenticationProvider(customAuthenticationProvider)
