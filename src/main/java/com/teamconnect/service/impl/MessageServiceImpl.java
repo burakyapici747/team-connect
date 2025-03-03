@@ -5,6 +5,7 @@ import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.dto.MessageDto;
 import com.teamconnect.dto.WebSocketMessageDto;
+import com.teamconnect.mapper.MessageMapper;
 import com.teamconnect.model.nosql.Message;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.couchbase.MessageRepository;
@@ -53,6 +54,7 @@ public class MessageServiceImpl implements MessageService {
         Map<String, User> userMap = userList.stream()
             .collect(Collectors.toMap(User::getId, Function.identity()));
 
+
         return messageList.stream()
             .map(message -> {
                 User author = userMap.get(message.getAuthorId());
@@ -87,7 +89,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public void sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws JsonProcessingException {
+    public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws JsonProcessingException {
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
         message.setAuthorId(authorId);
@@ -125,6 +127,8 @@ public class MessageServiceImpl implements MessageService {
             author.getUserProfile().getAvatarFileId()
         );
 
+
+
         webSocketMessageDto.setAuthor(authorOutput);
 
         rabbitTemplate.convertAndSend(
@@ -135,6 +139,33 @@ public class MessageServiceImpl implements MessageService {
                 m.getMessageProperties().setHeader("channelId", channelId);
                 return m;
             }
+        );
+
+        String avatarFileUrl = null;
+        String avatarFileId = null;
+
+        if (author.getUserProfile() != null) {
+            avatarFileUrl = author.getUserProfile().getAvatarFileUrl();
+            avatarFileId = author.getUserProfile().getAvatarFileId();
+        }
+
+        return new MessageDto(
+            message.getId(),
+            message.getChannelId(),
+            message.getContent(),
+            message.getTimestamp(),
+            message.getEditedTimestamp(),
+            message.getPinned(),
+            message.getType(),
+            message.getAttachments(),
+            message.getMentions(),
+            message.getReactions(),
+            new AuthorOutput(
+                author.getId(),
+                author.getUsername(),
+                avatarFileUrl,
+                avatarFileId
+            )
         );
     }
 }

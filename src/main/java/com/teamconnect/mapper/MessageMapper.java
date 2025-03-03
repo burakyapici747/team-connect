@@ -1,7 +1,7 @@
 package com.teamconnect.mapper;
 
 import com.teamconnect.api.input.message.MessageCreateInput;
-import com.teamconnect.api.output.MessageOutput;
+import com.teamconnect.api.output.message.MessageOutput;
 import com.teamconnect.dto.MessageDto;
 
 import java.util.List;

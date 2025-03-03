@@ -1,4 +1,4 @@
-package com.teamconnect.api.output;
+package com.teamconnect.api.output.message;
 
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.model.nosql.Attachment;

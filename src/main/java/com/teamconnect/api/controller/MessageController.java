@@ -2,7 +2,7 @@ package com.teamconnect.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teamconnect.api.input.message.MessageCreateInput;
-import com.teamconnect.api.output.MessageOutput;
+import com.teamconnect.api.output.message.MessageOutput;
 import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.mapper.MessageMapper;
 import com.teamconnect.security.CustomUserDetails;
@@ -37,18 +37,18 @@ public class MessageController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseWrapper<Void>> sendMessage(
+    public ResponseEntity<ResponseWrapper<MessageOutput>> sendMessage(
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @PathVariable(value = "channelId") String channelId,
         @RequestBody MessageCreateInput messageCreateInput
     ) throws JsonProcessingException {
-        messageService.sendMessage(channelId, customUserDetails.getId(), messageCreateInput);
-        return ResponseWrapper.noContent();
+        MessageOutput response = MessageMapper.INSTANCE.messageDtoToMessageOutput(messageService.sendMessage(channelId, customUserDetails.getId(), messageCreateInput));
+        return ResponseWrapper.ok(response);
     }
 
 //    @GetMapping("/received")
 //    public ResponseEntity<ResponseWrapper<List<MessageOutput>>> getReceivedMessages(
-//        @AuthenticationPrincipal CustomUserDetails userDetails,
+
 //        @RequestParam(required = false) Long timestamp,
 //        @RequestParam(defaultValue = "20") int limit
 //    ) {

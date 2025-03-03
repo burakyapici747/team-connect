@@ -10,13 +10,15 @@ import java.util.List;
 
 @Repository
 public interface MessageRepository extends CouchbaseRepository<Message, String> {
-    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId ORDER BY META().id DESC LIMIT $limit")
+    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId ORDER BY timestamp DESC LIMIT $limit")
     List<Message> findInitialMessages(
         @Param("channelId") String channelId,
         @Param("limit") int limit
     );
 
-    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $before ORDER BY META().id DESC LIMIT $limit")
+
+
+    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $before ORDER BY timestamp DESC LIMIT $limit")
     List<Message> findMessagesBeforeId(
         @Param("channelId") String channelId,
         @Param("before") String before,
