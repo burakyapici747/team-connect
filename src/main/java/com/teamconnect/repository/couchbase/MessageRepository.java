@@ -16,9 +16,7 @@ public interface MessageRepository extends CouchbaseRepository<Message, String> 
         @Param("limit") int limit
     );
 
-
-
-    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $before ORDER BY timestamp DESC LIMIT $limit")
+    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $before ORDER BY timestamp ASC LIMIT $limit")
     List<Message> findMessagesBeforeId(
         @Param("channelId") String channelId,
         @Param("before") String before,
