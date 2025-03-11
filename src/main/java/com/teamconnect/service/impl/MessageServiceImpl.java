@@ -5,7 +5,6 @@ import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.dto.MessageDto;
 import com.teamconnect.dto.WebSocketMessageDto;
-import com.teamconnect.mapper.MessageMapper;
 import com.teamconnect.model.nosql.Message;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.couchbase.MessageRepository;
@@ -95,7 +94,7 @@ public class MessageServiceImpl implements MessageService {
         message.setAuthorId(authorId);
         message.setChannelId(channelId);
         message.setContent(messageCreateInput.content());
-        message.setTimestamp(Instant.now());
+        message.setTimestamp(Instant.ofEpochSecond(Instant.now().toEpochMilli()));
         message.setEditedTimestamp(null);
         message.setPinned(false);
         message.setType(1);
@@ -126,8 +125,6 @@ public class MessageServiceImpl implements MessageService {
             author.getUserProfile().getAvatarFileUrl(),
             author.getUserProfile().getAvatarFileId()
         );
-
-
 
         webSocketMessageDto.setAuthor(authorOutput);
 
