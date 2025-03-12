@@ -3,7 +3,6 @@ package com.teamconnect.model.nosql;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.couchbase.core.mapping.Document;
 
-import java.io.Serializable;
 import java.time.Instant;
 import java.util.*;
 
@@ -13,7 +12,7 @@ public class Message extends BaseCouchbaseModel{
     private String channelId;
     private String authorId;
     private String content;
-    private Instant timestamp;
+    private Long timestamp;
     private Instant editedTimestamp;
     private Boolean pinned;
     private Integer type;
@@ -45,11 +44,11 @@ public class Message extends BaseCouchbaseModel{
         this.content = content;
     }
 
-    public Instant getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 

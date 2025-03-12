@@ -16,7 +16,7 @@ public class WebSocketMessageDto implements Serializable {
     private String id;
     private String channelId;
     private String content;
-    private Instant timestamp;
+    private Long timestamp;
     private Instant editedTimestamp;
     private Boolean pinned;
     private Integer type;
@@ -52,11 +52,11 @@ public class WebSocketMessageDto implements Serializable {
         this.content = content;
     }
 
-    public Instant getTimestamp() {
+    public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Instant timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
     }
 

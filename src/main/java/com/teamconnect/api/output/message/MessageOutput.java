@@ -13,7 +13,7 @@ public record MessageOutput(
     String id,
     String channelId,
     String content,
-    Instant timestamp,
+    Long timestamp,
     Instant editedTimestamp,
     Boolean pinned,
     Integer type,

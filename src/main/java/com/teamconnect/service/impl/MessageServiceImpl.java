@@ -88,13 +88,13 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws JsonProcessingException {
+    public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput){
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
         message.setAuthorId(authorId);
         message.setChannelId(channelId);
         message.setContent(messageCreateInput.content());
-        message.setTimestamp(Instant.ofEpochSecond(Instant.now().toEpochMilli()));
+        message.setTimestamp(Instant.now().toEpochMilli());
         message.setEditedTimestamp(null);
         message.setPinned(false);
         message.setType(1);
@@ -103,7 +103,6 @@ public class MessageServiceImpl implements MessageService {
         message.setReactions(null);
 
         messageRepository.save(message);
-
 
         User author = userRepository.findById(authorId).orElseThrow();
 
