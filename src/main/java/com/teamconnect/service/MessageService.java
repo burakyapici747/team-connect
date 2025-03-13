@@ -8,7 +8,7 @@ import java.util.List;
 
 @Service
 public interface MessageService {
-    List<MessageDto> getMessages(String channelId, String beforeMessageId, int limit);
+    List<MessageDto> getMessages(String channelId, String before, String after, int limit);
 
     MessageDto sendMessage(String channelId, String authorId, MessageCreateInput messageCreateInput);
 }

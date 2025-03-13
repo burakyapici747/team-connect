@@ -22,4 +22,11 @@ public interface MessageRepository extends CouchbaseRepository<Message, String> 
         @Param("before") String before,
         @Param("limit") int limit
     );
+
+    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $after ORDER BY timestamp DESC LIMIT $limit")
+    List<Message> findMessagesAfterId(
+        @Param("channelId") String channelId,
+        @Param("after") String after,
+        @Param("limit") int limit
+    );
 }

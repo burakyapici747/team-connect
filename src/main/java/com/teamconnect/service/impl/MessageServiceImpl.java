@@ -1,6 +1,5 @@
 package com.teamconnect.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.dto.MessageDto;
@@ -35,13 +34,15 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageDto> getMessages(String channelId, String beforeMessageId, int limit) {
+    public List<MessageDto> getMessages(String channelId, String before, String after, int limit) {
         List<Message> messageList;
 
-        if (Objects.isNull(beforeMessageId)) {
+        if (Objects.nonNull(before)) {
+            messageList = messageRepository.findMessagesBeforeId(channelId, before, limit);
+        } else if(Objects.nonNull(after)) {
+            messageList = messageRepository.findMessagesAfterId(channelId, before, limit);
+        }else{
             messageList = messageRepository.findInitialMessages(channelId, limit);
-        } else {
-            messageList = messageRepository.findMessagesBeforeId(channelId, beforeMessageId, limit);
         }
 
         Set<String> userIds = messageList.stream()
@@ -52,7 +53,6 @@ public class MessageServiceImpl implements MessageService {
 
         Map<String, User> userMap = userList.stream()
             .collect(Collectors.toMap(User::getId, Function.identity()));
-
 
         return messageList.stream()
             .map(message -> {
