@@ -39,10 +39,12 @@ public class MessageServiceImpl implements MessageService {
 
         if (Objects.nonNull(before)) {
             messageList = messageRepository.findMessagesBeforeId(channelId, before, limit);
-        } else if(Objects.nonNull(after)) {
-            messageList = messageRepository.findMessagesAfterId(channelId, before, limit);
-        }else{
-            messageList = messageRepository.findInitialMessages(channelId, limit);
+        } else {
+            if(Objects.nonNull(after)) {
+                messageList = messageRepository.findMessagesAfterId(channelId, after, limit);
+            }else{
+                messageList = messageRepository.findInitialMessages(channelId, limit);
+            }
         }
 
         Set<String> userIds = messageList.stream()
@@ -89,6 +91,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput){
+        boolean isLastMessageGroup = false;
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
         message.setAuthorId(authorId);

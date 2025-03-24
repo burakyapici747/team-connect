@@ -46,7 +46,7 @@ public class MessageController {
         @AuthenticationPrincipal CustomUserDetails customUserDetails,
         @PathVariable(value = "channelId") String channelId,
         @RequestBody MessageCreateInput messageCreateInput
-    ){
+    ) throws InterruptedException {
         MessageOutput response = MessageMapper.INSTANCE.messageDtoToMessageOutput(messageService.sendMessage(channelId, customUserDetails.getId(), messageCreateInput));
         return ResponseWrapper.ok(response);
     }

@@ -4,7 +4,8 @@ import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.Max;
 
 public record GetMessageQueryParams(
-    @Max(100) int limit,
+    @Max(100)
+    int limit,
     String before,
     String after
 ) {

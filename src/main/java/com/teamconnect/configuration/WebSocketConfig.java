@@ -37,7 +37,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-            .setAllowedOrigins("http://192.168.3.50:3000")
+            .setAllowedOrigins("http://192.168.3.62:3000")
             .addInterceptors(webSocketHandshakeInterceptor)
             .withSockJS();
     }

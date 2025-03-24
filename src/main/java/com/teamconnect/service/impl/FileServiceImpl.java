@@ -72,7 +72,7 @@ public class FileServiceImpl implements FileService {
         fileEntity.setFilePurpose(filePurposeType);
         fileEntity.setOwnerId(ownerId);
         fileEntity.setDeleted(false);
-        fileEntity.setFileUrl("http://192.168.3.50:8080/uploads/" + fileEntity.getId() + fileExtension);
+        fileEntity.setFileUrl("http://192.168.3.62:8080/uploads/" + fileEntity.getId() + fileExtension);
 
         return fileRepository.save(fileEntity);
     }
