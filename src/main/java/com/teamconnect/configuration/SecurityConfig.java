@@ -58,6 +58,17 @@ public class SecurityConfig {
     }
 
     @Bean
+    public SecurityFilterChain uploadFilterChain(HttpSecurity http, CorsConfigurationSource corsConfigurationSource) throws Exception {
+        return http
+            .securityMatcher(AntPathRequestMatcher.antMatcher("/uploads/**"))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth.requestMatchers("/uploads/**").permitAll())
+            .build();
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }

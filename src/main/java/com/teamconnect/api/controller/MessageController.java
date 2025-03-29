@@ -7,6 +7,8 @@ import com.teamconnect.api.output.ResponseWrapper;
 import com.teamconnect.mapper.MessageMapper;
 import com.teamconnect.security.CustomUserDetails;
 import com.teamconnect.service.MessageService;
+
+import java.io.IOException;
 import java.util.List;
 
 import jakarta.validation.Valid;
@@ -23,12 +25,24 @@ public class MessageController {
         this.messageService = messageService;
     }
 
+    @PostMapping
+    public ResponseEntity<ResponseWrapper<MessageOutput>> sendMessage(
+        @AuthenticationPrincipal CustomUserDetails customUserDetails,
+        @PathVariable(value = "channelId") String channelId,
+        @ModelAttribute MessageCreateInput messageCreateInput
+    ) throws IOException {
+        MessageOutput response = MessageMapper.INSTANCE.messageDtoToMessageOutput(
+            messageService.sendMessage(channelId, customUserDetails.getId(), messageCreateInput)
+        );
+        return ResponseWrapper.ok(response);
+    }
+
     @GetMapping
     public ResponseEntity<ResponseWrapper<List<MessageOutput>>> getMessages(
         @PathVariable(value = "channelId") String channelId,
         @Valid GetMessageQueryParams getMessageQueryParams,
         @AuthenticationPrincipal CustomUserDetails userDetails
-    ){
+    ) {
         return ResponseWrapper.ok(
             MessageMapper.INSTANCE.messageDtoListToMessageOutputList(
                 messageService.getMessages(
@@ -39,15 +53,5 @@ public class MessageController {
                 )
             )
         );
-    }
-
-    @PostMapping
-    public ResponseEntity<ResponseWrapper<MessageOutput>> sendMessage(
-        @AuthenticationPrincipal CustomUserDetails customUserDetails,
-        @PathVariable(value = "channelId") String channelId,
-        @RequestBody MessageCreateInput messageCreateInput
-    ) throws InterruptedException {
-        MessageOutput response = MessageMapper.INSTANCE.messageDtoToMessageOutput(messageService.sendMessage(channelId, customUserDetails.getId(), messageCreateInput));
-        return ResponseWrapper.ok(response);
     }
 }

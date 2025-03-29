@@ -16,14 +16,14 @@ public interface MessageRepository extends CouchbaseRepository<Message, String> 
         @Param("limit") int limit
     );
 
-    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $before ORDER BY timestamp ASC LIMIT $limit")
+    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND timestamp < (SELECT RAW m.timestamp FROM `teamconnect` m WHERE META(m).id = $before)[0] ORDER BY timestamp DESC LIMIT $limit")
     List<Message> findMessagesBeforeId(
         @Param("channelId") String channelId,
         @Param("before") String before,
         @Param("limit") int limit
     );
 
-    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $after ORDER BY timestamp DESC LIMIT $limit")
+    @Query("#{#n1ql.selectEntity} WHERE channelId = $channelId AND META().id < $after ORDER BY timestamp ASC LIMIT $limit")
     List<Message> findMessagesAfterId(
         @Param("channelId") String channelId,
         @Param("after") String after,

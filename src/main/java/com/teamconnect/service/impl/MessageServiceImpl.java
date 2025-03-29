@@ -2,16 +2,22 @@ package com.teamconnect.service.impl;
 
 import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
+import com.teamconnect.common.enumarator.FilePurposeType;
 import com.teamconnect.dto.MessageDto;
 import com.teamconnect.dto.WebSocketMessageDto;
+import com.teamconnect.model.nosql.Attachment;
+import com.teamconnect.model.nosql.File;
 import com.teamconnect.model.nosql.Message;
 import com.teamconnect.model.sql.User;
 import com.teamconnect.repository.couchbase.MessageRepository;
 import com.teamconnect.repository.postgresql.UserRepository;
+import com.teamconnect.service.FileService;
 import com.teamconnect.service.MessageService;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
 import java.util.function.Function;
@@ -22,19 +28,22 @@ public class MessageServiceImpl implements MessageService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final RabbitTemplate rabbitTemplate;
+    private final FileService fileService;
 
     public MessageServiceImpl(
         MessageRepository messageRepository,
         UserRepository userRepository,
-        RabbitTemplate rabbitTemplate
+        RabbitTemplate rabbitTemplate,
+        FileService fileService
     ) {
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
         this.rabbitTemplate = rabbitTemplate;
+        this.fileService = fileService;
     }
 
     @Override
-    public List<MessageDto> getMessages(String channelId, String before, String after, int limit) {
+    public List<MessageDto> getMessages(String channelId, String before, String after, int limit){
         List<Message> messageList;
 
         if (Objects.nonNull(before)) {
@@ -90,21 +99,20 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput){
-        boolean isLastMessageGroup = false;
+    public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws IOException {
+        Set<Attachment> attachmentSet = createInputFiles(channelId, messageCreateInput.getMultipartFileList());
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
         message.setAuthorId(authorId);
         message.setChannelId(channelId);
-        message.setContent(messageCreateInput.content());
+        message.setContent(messageCreateInput.getContent());
         message.setTimestamp(Instant.now().toEpochMilli());
         message.setEditedTimestamp(null);
         message.setPinned(false);
         message.setType(1);
-        message.setAttachments(null);
+        message.setAttachments(attachmentSet);
         message.setMentions(null);
         message.setReactions(null);
-
         messageRepository.save(message);
 
         User author = userRepository.findById(authorId).orElseThrow();
@@ -166,5 +174,27 @@ public class MessageServiceImpl implements MessageService {
                 avatarFileId
             )
         );
+    }
+
+    private Set<Attachment> createInputFiles(String channelId, List<MultipartFile> fileList) throws IOException {
+        Set<Attachment> messageAttachmentList = new HashSet<>();
+        if(Objects.nonNull(fileList)){
+            for(MultipartFile file : fileList){
+                if(Objects.nonNull(file) && !file.isEmpty()){
+                    File messageFile = fileService.storeFile(file, FilePurposeType.IMAGE, channelId);
+                    Attachment attachment = new Attachment();
+                    attachment.setId(UUID.randomUUID().toString());
+                    attachment.setName(file.getOriginalFilename());
+                    attachment.setTitle("");
+                    attachment.setDescription("");
+                    attachment.setContentType(file.getContentType());
+                    attachment.setSize(file.getSize());
+                    attachment.setUrl(messageFile.getFileUrl());
+                    messageAttachmentList.add(attachment);
+                }
+            }
+        }
+
+        return messageAttachmentList;
     }
 }

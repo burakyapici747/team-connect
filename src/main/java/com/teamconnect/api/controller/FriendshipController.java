@@ -21,10 +21,7 @@ public class FriendshipController {
     private final FriendshipService friendshipService;
     private final FriendshipMapper friendshipMapper;
 
-    public FriendshipController(
-        FriendshipService friendshipService,
-        FriendshipMapper friendshipMapper
-    ) {
+    public FriendshipController(FriendshipService friendshipService, FriendshipMapper friendshipMapper) {
         this.friendshipService = friendshipService;
         this.friendshipMapper = friendshipMapper;
     }

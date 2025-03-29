@@ -30,8 +30,7 @@ public class TeamController {
 
 	@GetMapping("/{id}")
 	public ResponseEntity<ResponseWrapper<TeamPublicDetailsOutput>> getTeamById(@PathVariable String id) {
-		return ResponseWrapper.ok(
-            TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(teamService.getTeamById(id)));
+		return ResponseWrapper.ok(TeamMapper.INSTANCE.teamDtoToTeamPublicDetailsOutput(teamService.getTeamById(id)));
 	}
 
 	@PostMapping
