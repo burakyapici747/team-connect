@@ -3,6 +3,7 @@ package com.teamconnect.service.impl;
 import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.common.enumarator.FilePurposeType;
+import com.teamconnect.configuration.RabbitMQConfig;
 import com.teamconnect.dto.MessageDto;
 import com.teamconnect.dto.WebSocketMessageDto;
 import com.teamconnect.model.nosql.Attachment;
@@ -27,19 +28,22 @@ import java.util.stream.Collectors;
 public class MessageServiceImpl implements MessageService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
-    private final RabbitTemplate rabbitTemplate;
     private final FileService fileService;
+    private final RabbitMQConfig rabbitMQConfig;
+    private final RabbitConsumer rabbitConsumer;
 
     public MessageServiceImpl(
         MessageRepository messageRepository,
         UserRepository userRepository,
-        RabbitTemplate rabbitTemplate,
-        FileService fileService
+        FileService fileService,
+        RabbitMQConfig rabbitMQConfig,
+        RabbitConsumer rabbitConsumer
     ) {
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
-        this.rabbitTemplate = rabbitTemplate;
         this.fileService = fileService;
+        this.rabbitMQConfig = rabbitMQConfig;
+        this.rabbitConsumer = rabbitConsumer;
     }
 
     @Override
@@ -100,6 +104,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws IOException {
+        rabbitConsumer.createChannelListener(channelId);
         Set<Attachment> attachmentSet = createInputFiles(channelId, messageCreateInput.getMultipartFileList());
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
@@ -138,15 +143,7 @@ public class MessageServiceImpl implements MessageService {
 
         webSocketMessageDto.setAuthor(authorOutput);
 
-        rabbitTemplate.convertAndSend(
-            "dm.exchange.dccd525d-d909-4cec-99f4-28cb459eb9a5",
-            channelId,
-            webSocketMessageDto,
-            m -> {
-                m.getMessageProperties().setHeader("channelId", channelId);
-                return m;
-            }
-        );
+        rabbitMQConfig.sendChannelMessage(channelId, webSocketMessageDto);
 
         String avatarFileUrl = null;
         String avatarFileId = null;
