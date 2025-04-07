@@ -1,17 +1,18 @@
 package com.teamconnect.common.enumarator;
 
+import lombok.Getter;
+
+@Getter
 public enum ChannelType {
-    TEXT_CHANNEL("TEXT_CHANNEL"),
-    VOICE_CHANNEL("VOICE_CHANNEL"),
-    DIRECT_CHANNEL("DIRECT_CHANNEL");
+    TEAM_TEXT(0),
+    DM(1),
+    TEAM_VOICE(2),
+    GROUP_DM(3),
+    TEAM_CATEGORY(4);
 
-    private final String value;
+    private final int id;
 
-    ChannelType(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
+    ChannelType(int id){
+        this.id = id;
     }
 }

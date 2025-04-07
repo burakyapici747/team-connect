@@ -1,5 +1,7 @@
 package com.teamconnect.mapper;
 
+import com.teamconnect.api.input.channel.ChannelCreateInput;
+import com.teamconnect.api.output.channel.ChannelPrivateOutput;
 import com.teamconnect.api.output.channel.ChannelPublicOutput;
 import com.teamconnect.dto.ChannelDto;
 import com.teamconnect.model.nosql.Channel;
@@ -16,5 +18,10 @@ public interface ChannelMapper {
 
     List<ChannelDto> channelListToChannelDtoList(List<Channel> channelList);
 
+    Channel channelCreateInputToChannel(ChannelCreateInput channelCreateInput);
+
+    ChannelDto channelToChannelDto(Channel channel);
+
+    ChannelPrivateOutput channelDtoToChannelPrivateOutput(ChannelDto channelDto);
     List<ChannelPublicOutput> channelDtoListToChannelPublicOutputlist(List<ChannelDto> channelDtoList);
 }
