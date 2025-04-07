@@ -1,15 +1,18 @@
 package com.teamconnect.api.output.channel;
 
-import java.util.List;
+import com.teamconnect.common.enumarator.ChannelType;
+
+import java.util.Set;
 
 public record ChannelPublicOutput (
     String id,
+    ChannelType channelType,
+    String teamId,
+    int position,
+    int permission_overwrites,
     String name,
-    String topic,
     String lastMessageId,
-    Integer userLimit,
-    Integer rateLimitPerUser,
-    List<String> recipients,
-    String icon,
+    int userLimit,
+    Set<String> recipients,
     String ownerId
 ){}

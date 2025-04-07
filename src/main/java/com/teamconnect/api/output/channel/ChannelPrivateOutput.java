@@ -1,10 +1,10 @@
-package com.teamconnect.dto;
+package com.teamconnect.api.output.channel;
 
 import com.teamconnect.common.enumarator.ChannelType;
 
 import java.util.Set;
 
-public record ChannelDto (
+public record ChannelPrivateOutput(
     String id,
     ChannelType channelType,
     String teamId,
