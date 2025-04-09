@@ -3,7 +3,6 @@ package com.teamconnect.service.impl;
 import com.teamconnect.api.input.message.MessageCreateInput;
 import com.teamconnect.api.output.user.AuthorOutput;
 import com.teamconnect.common.enumarator.FilePurposeType;
-import com.teamconnect.configuration.RabbitMQConfig;
 import com.teamconnect.dto.MessageDto;
 import com.teamconnect.dto.WebSocketMessageDto;
 import com.teamconnect.model.nosql.Attachment;
@@ -14,6 +13,7 @@ import com.teamconnect.repository.couchbase.MessageRepository;
 import com.teamconnect.repository.postgresql.UserRepository;
 import com.teamconnect.service.FileService;
 import com.teamconnect.service.MessageService;
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,21 +29,20 @@ public class MessageServiceImpl implements MessageService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
     private final FileService fileService;
-    private final RabbitMQConfig rabbitMQConfig;
-    private final RabbitConsumer rabbitConsumer;
+    private final RabbitTemplate rabbitTemplate;
+    private final DirectExchange directExchange;
 
     public MessageServiceImpl(
         MessageRepository messageRepository,
         UserRepository userRepository,
         FileService fileService,
-        RabbitMQConfig rabbitMQConfig,
-        RabbitConsumer rabbitConsumer
-    ) {
+        RabbitTemplate rabbitTemplate,
+        DirectExchange directExchange) {
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
         this.fileService = fileService;
-        this.rabbitMQConfig = rabbitMQConfig;
-        this.rabbitConsumer = rabbitConsumer;
+        this.rabbitTemplate = rabbitTemplate;
+        this.directExchange = directExchange;
     }
 
     @Override
@@ -104,7 +103,6 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public MessageDto sendMessage(String channelId, String authorId,  MessageCreateInput messageCreateInput) throws IOException {
-        rabbitConsumer.createChannelListener(channelId);
         Set<Attachment> attachmentSet = createInputFiles(channelId, messageCreateInput.getMultipartFileList());
         Message message = new Message();
         message.setId(UUID.randomUUID().toString());
@@ -143,7 +141,11 @@ public class MessageServiceImpl implements MessageService {
 
         webSocketMessageDto.setAuthor(authorOutput);
 
-        rabbitMQConfig.sendChannelMessage(channelId, webSocketMessageDto);
+        rabbitTemplate.convertAndSend(
+            directExchange.getName(),
+            "dm.channel.message.route." + channelId,
+            webSocketMessageDto
+        );
 
         String avatarFileUrl = null;
         String avatarFileId = null;

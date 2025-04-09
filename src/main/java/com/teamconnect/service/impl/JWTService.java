@@ -78,8 +78,8 @@ public class JWTService {
 
     public boolean isTokenValid(String token) {
         try {
-            extractAllClaims(token); // İmza doğrulaması yapar
-            return !isTokenExpired(token); // Süre kontrolü yapar
+            extractAllClaims(token);
+            return !isTokenExpired(token);
         } catch (Exception e) {
             log.error("Error validating token: ", e);
             return false;

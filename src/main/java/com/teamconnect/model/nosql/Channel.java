@@ -19,7 +19,7 @@ public class Channel extends BaseCouchbaseModel {
     private Integer permissionOverwrites; //TODO: Izinler sonrasinda ayarlanacak.
     private String name;
     private String lastMessageId;
-    private Integer userLimit; // if its voice channel
+    private Integer userLimit;
     private Set<String> recipients;
     private String ownerId;
 }
