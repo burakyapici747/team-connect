@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ChannelRepository extends CouchbaseRepository<Channel, String> {
     @Query("#{#n1ql.selectEntity} WHERE #{#n1ql.filter} " +
-           "AND ARRAY_CONTAINS(recipients, $userId) " +
-           "AND type = 'DIRECT_CHANNEL'")
+        "AND (ARRAY_CONTAINS(recipients, $userId) OR ownerId = $userId) " +
+        "AND channelType = 'DM'")
     List<Channel> findChannelsByUserId(@Param("userId") String userId);
 }
