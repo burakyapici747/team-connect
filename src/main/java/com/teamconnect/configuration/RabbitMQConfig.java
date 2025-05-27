@@ -11,8 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMQConfig {
     @Bean
-    public DirectExchange dmChannelDirectExchange(){
-        return ExchangeBuilder.directExchange("dm.channel.message.exchange").durable(true).build();
+    public TopicExchange dmChannelMessageTopicExchange(){
+        return ExchangeBuilder.topicExchange("dm.channel.message.topic.exchange").durable(true).build();
     }
 
     @Bean
@@ -21,9 +21,9 @@ public class RabbitMQConfig {
     }
 
     @Bean
-    public Binding dmChannelMessagesBinding(Queue dmChannelMessagesQueue, DirectExchange directExchange){
+    public Binding dmChannelMessagesBinding(Queue dmChannelMessagesQueue, TopicExchange dmChannelMessageTopicExchange){
         return BindingBuilder.bind(dmChannelMessagesQueue)
-            .to(directExchange)
+            .to(dmChannelMessageTopicExchange)
             .with("dm.channel.message.#");
     }
 

@@ -43,10 +43,7 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
 
-    private void validatePassword(
-            UserDetails userDetails,
-            UsernamePasswordAuthenticationToken authenticationToken
-    ) {
+    private void validatePassword(UserDetails userDetails, UsernamePasswordAuthenticationToken authenticationToken) {
         if(!passwordEncoder.matches(authenticationToken.getCredentials().toString(), userDetails.getPassword())){
             throw new UserNotFoundException("User not found");
         }

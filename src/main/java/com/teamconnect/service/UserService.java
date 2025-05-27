@@ -5,11 +5,9 @@ import com.teamconnect.api.input.user.UserRegisterInput;
 import com.teamconnect.api.input.user.UserUpdateInput;
 import com.teamconnect.api.input.user.UserUpdatePasswordInput;
 import com.teamconnect.api.input.user.UserUpdateProfileInput;
-import com.teamconnect.dto.ChannelDto;
-import com.teamconnect.dto.TeamDto;
-import com.teamconnect.dto.UserDto;
-import com.teamconnect.dto.UserProfileDto;
+import com.teamconnect.dto.*;
 import com.teamconnect.model.sql.User;
+import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -46,4 +44,6 @@ public interface UserService {
     UserProfileDto uploadUserProfileAvatar(String currentUserId, MultipartFile file) throws IOException;
 
     List<UserDto> getAllByIdIn(Set<String> userIds);
+
+    PageableDto<UserDto> getAll();
 }

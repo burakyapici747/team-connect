@@ -1,11 +1,11 @@
 package com.teamconnect.common.enumarator;
 
 public enum FilePurposeType {
-    AVATAR("avatar"),
-    ATTACHMENT("attachment"),
-    BACKGROUND("background"),
-    LOGO("logo"),
-    IMAGE("image");
+    AVATAR("AVATAR"),
+    ATTACHMENT("ATTACHMENT"),
+    BACKGROUND("BACKGROUND"),
+    LOGO("LOGO"),
+    IMAGE("IMAGE");
 
     private final String value;
 

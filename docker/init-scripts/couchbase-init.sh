@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Couchbase'in hazır olmasını bekle
-until curl -f http://localhost:8091; do
+until curl -f http://192.168.3.62:8091; do
     echo "Couchbase henüz hazır değil - bekleniyor..."
     sleep 3
 done
@@ -9,7 +9,7 @@ done
 echo "Couchbase hazır, init işlemleri başlıyor..."
 
 # Cluster'ın durumunu daha detaylı kontrol et
-init_status=$(curl -s -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASSWORD http://localhost:8091/pools/default)
+init_status=$(curl -s -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASSWORD http://192.168.3.62:8091/pools/default)
 if [ $? -eq 0 ] && ! echo "$init_status" | grep -q "unknown pool"; then
     echo "Cluster zaten initialize edilmiş durumda. Ayarları güncelleniyor..."
     
@@ -36,7 +36,7 @@ fi
 sleep 5
 
 # Bucket'ın var olup olmadığını kontrol et
-bucket_exists=$(curl -s -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASSWORD http://localhost:8091/pools/default/buckets/teamconnect)
+bucket_exists=$(curl -s -u $COUCHBASE_ADMINISTRATOR_USERNAME:$COUCHBASE_ADMINISTRATOR_PASSWORD http://192.168.3.62:8091/pools/default/buckets/teamconnect)
 if echo "$bucket_exists" | grep -q "\"name\":\"teamconnect\""; then
     echo "Bucket zaten mevcut, oluşturma adımı atlanıyor..."
 else
