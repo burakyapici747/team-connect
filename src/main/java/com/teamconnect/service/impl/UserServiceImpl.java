@@ -6,20 +6,20 @@ import java.util.Set;
 
 import com.teamconnect.api.input.user.*;
 import com.teamconnect.common.enumarator.FilePurposeType;
-import com.teamconnect.dto.ChannelDto;
-import com.teamconnect.dto.TeamDto;
+import com.teamconnect.dto.*;
 import com.teamconnect.model.nosql.File;
 import com.teamconnect.model.sql.UserRole;
 import com.teamconnect.service.ChannelService;
 import com.teamconnect.service.FileService;
 import com.teamconnect.service.TeamService;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.teamconnect.common.enumarator.Role;
-import com.teamconnect.dto.UserDto;
-import com.teamconnect.dto.UserProfileDto;
 import com.teamconnect.exception.UserAlreadyExistsException;
 import com.teamconnect.exception.UserNotFoundException;
 import com.teamconnect.mapper.UserMapper;
@@ -148,6 +148,21 @@ public class UserServiceImpl implements UserService {
         return findUserById(id);
     }
 
+    @Override
+    public PageableDto<UserDto> getAll(){
+        Pageable page = PageRequest.of(0, 10);
+        Page<User> usersPage = userRepository.findAll(page);
+
+        List<UserDto> userDtoList = UserMapper.INSTANCE.userListToUserDtoList(usersPage.getContent());
+
+        return new PageableDto<>(
+            userDtoList,
+            usersPage.hasNext(),
+            usersPage.getTotalPages(),
+            usersPage.hasPrevious()
+        );
+    }
+
     private User findUserById(String id) {
         return userRepository.findById(id)
             .orElseThrow(() -> new UserNotFoundException("User not found"));
@@ -187,7 +202,7 @@ public class UserServiceImpl implements UserService {
     private User createNewUser(UserRegisterInput input) {
         User user = UserMapper.INSTANCE.userRegisterInputToUser(input);
         UserRole userRole = new UserRole();
-        userRole.setRole(Role.ROLE_USER);
+        userRole.setRole(Role.USER);
         user.setPassword(passwordEncoder.encode(input.password()));
         user.setRoles(Set.of(userRole));
         UserProfile userProfile = new UserProfile();

@@ -20,22 +20,6 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7.2-alpine
-    container_name: teamconnect-redis
-    ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
-    networks:
-      - teamconnect-network
-    command: redis-server --appendonly yes
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
   couchbase:
     build:
       context: .
@@ -53,6 +37,22 @@ services:
       - COUCHBASE_ADMINISTRATOR_PASSWORD=plplpl123
     command: bash -c "/entrypoint.sh couchbase-server & sleep 15 && /opt/couchbase/init/couchbase-init.sh && wait"
 
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    hostname: rabbitmq
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_ERLANG_COOKIE: "teamconnect_cookie"
+      RABBITMQ_DEFAULT_USER: "guest"
+      RABBITMQ_DEFAULT_PASS: "guest"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - teamconnect-network
+
 networks:
   teamconnect-network:
     driver: bridge
@@ -64,6 +64,6 @@ volumes:
   couchbase_data:
     name: teamconnect_couchbase_data
     driver: local
-  redis_data:
-    name: teamconnect_redis_data
-    driver: local 
+  rabbitmq_data:
+    name: teamconnect_rabbitmq_data
+    driver: local

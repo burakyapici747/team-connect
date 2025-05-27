@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.util.List;
 
 import com.teamconnect.service.UserService;
-import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,20 +29,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class TeamServiceImpl implements TeamService {
     private final FileService fileService;
     private final TeamRepository teamRepository;
-    private final RabbitMQConfig rabbitMQConfig;
-    private final RabbitAdmin rabbitAdmin;
     private final UserService userService;
 
     public TeamServiceImpl(
         TeamRepository teamRepository,
         RabbitMQConfig rabbitMQConfig,
-        RabbitAdmin rabbitAdmin,
         UserService userService,
         FileService fileService
     ) {
         this.teamRepository = teamRepository;
-        this.rabbitMQConfig = rabbitMQConfig;
-        this.rabbitAdmin = rabbitAdmin;
         this.userService = userService;
         this.fileService = fileService;
     }
@@ -61,12 +55,6 @@ public class TeamServiceImpl implements TeamService {
         team.setOwner(user);
 
         Team savedTeam = teamRepository.save(team);
-
-        // Create team chat queue
-        rabbitMQConfig.declareQueue(
-            rabbitMQConfig.createDMChannelQueue("dsadsa"),
-            rabbitAdmin
-        );
 
         return TeamMapper.INSTANCE.teamToTeamDto(savedTeam);
     }
@@ -90,9 +78,6 @@ public class TeamServiceImpl implements TeamService {
     @Override
     public void deleteTeam(String id, TeamDeleteInput input) {
         Team team = findById(id);
-
-        // Delete team chat queue
-        rabbitAdmin.deleteQueue(String.format("team-chat.%s", team.getId()));
 
         teamRepository.delete(team);
     }

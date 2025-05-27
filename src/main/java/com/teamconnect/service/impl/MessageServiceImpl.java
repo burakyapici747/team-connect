@@ -13,7 +13,6 @@ import com.teamconnect.repository.couchbase.MessageRepository;
 import com.teamconnect.repository.postgresql.UserRepository;
 import com.teamconnect.service.FileService;
 import com.teamconnect.service.MessageService;
-import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,19 +29,16 @@ public class MessageServiceImpl implements MessageService {
     private final MessageRepository messageRepository;
     private final FileService fileService;
     private final RabbitTemplate rabbitTemplate;
-    private final DirectExchange directExchange;
 
     public MessageServiceImpl(
         MessageRepository messageRepository,
         UserRepository userRepository,
-        FileService fileService,
-        RabbitTemplate rabbitTemplate,
-        DirectExchange directExchange) {
+        FileService fileService, RabbitTemplate rabbitTemplate
+    ) {
         this.userRepository = userRepository;
         this.messageRepository = messageRepository;
         this.fileService = fileService;
         this.rabbitTemplate = rabbitTemplate;
-        this.directExchange = directExchange;
     }
 
     @Override
@@ -132,6 +128,9 @@ public class MessageServiceImpl implements MessageService {
         webSocketMessageDto.setMentions(message.getMentions());
         webSocketMessageDto.setReactions(message.getReactions());
 
+        rabbitTemplate.convertAndSend("chat.msg", message.getChannelId(), webSocketMessageDto,
+            m -> { m.getMessageProperties().setContentType("application/json"); return m; });
+
         AuthorOutput authorOutput = new AuthorOutput(
             author.getId(),
             author.getUsername(),
@@ -140,12 +139,6 @@ public class MessageServiceImpl implements MessageService {
         );
 
         webSocketMessageDto.setAuthor(authorOutput);
-
-        rabbitTemplate.convertAndSend(
-            directExchange.getName(),
-            "dm.channel.message.route." + channelId,
-            webSocketMessageDto
-        );
 
         String avatarFileUrl = null;
         String avatarFileId = null;
@@ -166,12 +159,7 @@ public class MessageServiceImpl implements MessageService {
             message.getAttachments(),
             message.getMentions(),
             message.getReactions(),
-            new AuthorOutput(
-                author.getId(),
-                author.getUsername(),
-                avatarFileUrl,
-                avatarFileId
-            )
+            new AuthorOutput(author.getId(), author.getUsername(), avatarFileUrl, avatarFileId)
         );
     }
 

@@ -17,7 +17,7 @@ public final class SecurityConstants {
 
             public static final Map<String, List<String>> ALLOWED_ENDPOINTS = Map.of(
                     "POST", List.of(
-                            "http://192.168.3.62/v1/api/auth/login",
+                            "http://192.168.3.62/v1/api/auth",
                             "http://192.168.3.62/v1/api/auth/refresh-token"),
                     "GET", List.of(
                             "http://192.168.3.62/v1/api/users/verify-email",
